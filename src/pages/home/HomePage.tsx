@@ -27,42 +27,132 @@ import { brl } from "@/utils/format";
 import { useDb } from "@/store/mockDb";
 
 const FEATURES = [
-  { icon: Calendar, title: "Agenda inteligente", desc: "Drag-and-drop, conflitos detectados, múltiplos profissionais." },
-  { icon: Users, title: "Clientes organizados", desc: "Histórico, aniversários, observações e frequência num lugar só." },
-  { icon: MessageSquare, title: "Lembretes automáticos", desc: "Confirmações por WhatsApp e e-mail reduzem faltas em até 70%." },
-  { icon: BarChart3, title: "Relatórios claros", desc: "Faturamento, ticket médio e produtividade em dashboards leves." },
-  { icon: Sparkles, title: "Agendamento online", desc: "Sua cliente reserva sozinha, 24h por dia, do celular." },
-  { icon: Shield, title: "Dados isolados", desc: "Multi-tenant com criptografia. Cada salão é independente." },
+  {
+    icon: Calendar,
+    title: "Agenda inteligente",
+    desc: "Drag-and-drop, conflitos detectados, múltiplos profissionais.",
+  },
+  {
+    icon: Users,
+    title: "Clientes organizados",
+    desc: "Histórico, aniversários, observações e frequência num lugar só.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Lembretes automáticos",
+    desc: "Confirmações por WhatsApp e e-mail reduzem faltas em até 70%.",
+  },
+  {
+    icon: BarChart3,
+    title: "Relatórios claros",
+    desc: "Faturamento, ticket médio e produtividade em dashboards leves.",
+  },
+  {
+    icon: Sparkles,
+    title: "Agendamento online",
+    desc: "Sua cliente reserva sozinha, 24h por dia, do celular.",
+  },
+  {
+    icon: Shield,
+    title: "Dados isolados",
+    desc: "Multi-tenant com criptografia. Cada salão é independente.",
+  },
 ];
 
 const STEPS = [
-  { n: "01", title: "Escolha o serviço", desc: "Veja preços e duração de cada procedimento, sem surpresas." },
-  { n: "02", title: "Selecione horário", desc: "Disponibilidade real, atualizada com a agenda da equipe." },
-  { n: "03", title: "Receba a confirmação", desc: "Lembrete automático no WhatsApp e e-mail, 24h antes." },
+  {
+    n: "01",
+    title: "Escolha o serviço",
+    desc: "Veja preços e duração de cada procedimento, sem surpresas.",
+  },
+  {
+    n: "02",
+    title: "Selecione horário",
+    desc: "Disponibilidade real, atualizada com a agenda da equipe.",
+  },
+  {
+    n: "03",
+    title: "Receba a confirmação",
+    desc: "Lembrete automático no WhatsApp e e-mail, 24h antes.",
+  },
 ];
 
 const PLANS = [
-  { name: "Starter", price: 49, features: ["1 profissional", "Agenda completa", "Cadastro de clientes", "Suporte por e-mail"] },
-  { name: "Pro", price: 99, popular: true, features: ["Até 5 profissionais", "Tudo do Starter", "Lembretes WhatsApp", "Relatórios avançados", "Comissões"] },
-  { name: "Premium", price: 199, features: ["Profissionais ilimitados", "Tudo do Pro", "Multi-unidade", "API e integrações", "Suporte prioritário"] },
+  {
+    name: "Starter",
+    price: 49,
+    features: ["1 profissional", "Agenda completa", "Cadastro de clientes", "Suporte por e-mail"],
+  },
+  {
+    name: "Pro",
+    price: 99,
+    popular: true,
+    features: [
+      "Até 5 profissionais",
+      "Tudo do Starter",
+      "Lembretes WhatsApp",
+      "Relatórios avançados",
+      "Comissões",
+    ],
+  },
+  {
+    name: "Premium",
+    price: 199,
+    features: [
+      "Profissionais ilimitados",
+      "Tudo do Pro",
+      "Multi-unidade",
+      "API e integrações",
+      "Suporte prioritário",
+    ],
+  },
 ];
 
 const TESTIMONIALS = [
-  { name: "Marina Castro", role: "Studio Belle · SP", text: "Em duas semanas zerei as faltas e organizei a agenda das três profissionais. Parece coisa de outro mundo." },
-  { name: "Carla Mendes", role: "Rosé Atelier · RJ", text: "Minhas clientes amaram poder agendar pelo celular. O faturamento subiu 30% no primeiro mês." },
-  { name: "Helena Lima", role: "Nude Beauty · BH", text: "Tudo na palma da mão. Relatórios claros, agenda linda e suporte que responde de verdade." },
+  {
+    name: "Marina Castro",
+    role: "Studio Belle · SP",
+    text: "Em duas semanas zerei as faltas e organizei a agenda das três profissionais. Parece coisa de outro mundo.",
+  },
+  {
+    name: "Carla Mendes",
+    role: "Rosé Atelier · RJ",
+    text: "Minhas clientes amaram poder agendar pelo celular. O faturamento subiu 30% no primeiro mês.",
+  },
+  {
+    name: "Helena Lima",
+    role: "Nude Beauty · BH",
+    text: "Tudo na palma da mão. Relatórios claros, agenda linda e suporte que responde de verdade.",
+  },
 ];
 
 const FAQ = [
-  { q: "Preciso instalar algum aplicativo?", a: "Não. O Belle roda direto no navegador, no computador ou no celular. Suas clientes também agendam pelo navegador, sem baixar nada." },
-  { q: "Posso cancelar quando quiser?", a: "Sim. Sem fidelidade, sem multa. Você pode cancelar com um clique a qualquer momento dentro da sua conta." },
-  { q: "Os dados ficam seguros?", a: "Sim. Cada salão tem dados isolados, criptografados em trânsito e em repouso, com backups diários automáticos." },
-  { q: "Funciona para barbearia e estética?", a: "Funciona para qualquer negócio que trabalhe com agendamento por horário: salão, barbearia, estética, podologia, manicure, lash designer e mais." },
-  { q: "Tem teste grátis?", a: "Sim, 14 dias com acesso completo a todas as funcionalidades. Sem precisar cadastrar cartão de crédito." },
+  {
+    q: "Preciso instalar algum aplicativo?",
+    a: "Não. O Belle roda direto no navegador, no computador ou no celular. Suas clientes também agendam pelo navegador, sem baixar nada.",
+  },
+  {
+    q: "Posso cancelar quando quiser?",
+    a: "Sim. Sem fidelidade, sem multa. Você pode cancelar com um clique a qualquer momento dentro da sua conta.",
+  },
+  {
+    q: "Os dados ficam seguros?",
+    a: "Sim. Cada salão tem dados isolados, criptografados em trânsito e em repouso, com backups diários automáticos.",
+  },
+  {
+    q: "Funciona para barbearia e estética?",
+    a: "Funciona para qualquer negócio que trabalhe com agendamento por horário: salão, barbearia, estética, podologia, manicure, lash designer e mais.",
+  },
+  {
+    q: "Tem teste grátis?",
+    a: "Sim, 14 dias com acesso completo a todas as funcionalidades. Sem precisar cadastrar cartão de crédito.",
+  },
 ];
 
 export default function HomePage() {
-  const services = useDb((s) => s.services).filter((s) => s.active).slice(0, 6);
+  const services = useDb((s) => s.services)
+    .filter((s) => s.active)
+    .slice(0, 6);
   const professionals = useDb((s) => s.professionals).slice(0, 4);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -100,8 +190,8 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground mt-5 max-w-xl">
-              Escolha o serviço, o horário e a profissional. Sem ligação, sem espera —
-              sua agenda em poucos toques.
+              Escolha o serviço, o horário e a profissional. Sem ligação, sem espera — sua agenda em
+              poucos toques.
             </p>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
               <Link
@@ -150,7 +240,9 @@ export default function HomePage() {
             <Card className="p-6 border-border/60 shadow-[0_30px_80px_-30px_rgba(232,180,184,0.5)] bg-card/90 backdrop-blur">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-primary font-medium">Próximo horário</p>
+                  <p className="text-xs uppercase tracking-wider text-primary font-medium">
+                    Próximo horário
+                  </p>
                   <p className="font-display text-lg font-semibold capitalize mt-0.5">{today}</p>
                 </div>
                 <span className="text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary font-medium">
@@ -169,7 +261,10 @@ export default function HomePage() {
                     key={a.time}
                     className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-background hover:border-primary/40 transition-colors cursor-pointer group"
                   >
-                    <div className="size-10 rounded-lg flex items-center justify-center text-xs font-medium text-primary-foreground shrink-0" style={{ background: a.color }}>
+                    <div
+                      className="size-10 rounded-lg flex items-center justify-center text-xs font-medium text-primary-foreground shrink-0"
+                      style={{ background: a.color }}
+                    >
                       <Clock className="size-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -215,7 +310,9 @@ export default function HomePage() {
       {/* ===== HOW IT WORKS ===== */}
       <section id="how" className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center max-w-2xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Como funciona</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+            Como funciona
+          </p>
           <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
             Três passos. Zero complicação.
           </h2>
@@ -223,7 +320,9 @@ export default function HomePage() {
         <div className="grid md:grid-cols-3 gap-5 mt-14 relative">
           {STEPS.map((s, i) => (
             <Card key={s.n} className="p-8 border-border/60 relative overflow-hidden">
-              <span className="font-display text-7xl font-semibold text-primary/15 absolute -top-2 -right-2 select-none">{s.n}</span>
+              <span className="font-display text-7xl font-semibold text-primary/15 absolute -top-2 -right-2 select-none">
+                {s.n}
+              </span>
               <div className="size-11 rounded-xl bg-primary/15 flex items-center justify-center mb-5">
                 {i === 0 && <Scissors className="size-5 text-primary" strokeWidth={1.75} />}
                 {i === 1 && <Calendar className="size-5 text-primary" strokeWidth={1.75} />}
@@ -241,19 +340,27 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div className="max-w-xl">
-              <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Nossos serviços</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+                Nossos serviços
+              </p>
               <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
                 Cuidado para cada detalhe.
               </h2>
             </div>
-            <Link to="/agendar" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">
+            <Link
+              to="/agendar"
+              className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
+            >
               Ver todos <ArrowRight className="size-4" />
             </Link>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-14">
             {services.map((s) => (
-              <Card key={s.id} className="p-6 border-border/60 hover:border-primary/40 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-25px_rgba(232,180,184,0.5)] group">
+              <Card
+                key={s.id}
+                className="p-6 border-border/60 hover:border-primary/40 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-25px_rgba(232,180,184,0.5)] group"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
@@ -264,7 +371,9 @@ export default function HomePage() {
                       <Clock className="size-3" /> {s.durationMin} min
                     </p>
                   </div>
-                  <p className="font-display text-2xl font-semibold text-primary shrink-0">{brl(s.price)}</p>
+                  <p className="font-display text-2xl font-semibold text-primary shrink-0">
+                    {brl(s.price)}
+                  </p>
                 </div>
                 <Link
                   to="/agendar"
@@ -281,7 +390,9 @@ export default function HomePage() {
       {/* ===== PROFESSIONALS ===== */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center max-w-2xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Nossa equipe</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+            Nossa equipe
+          </p>
           <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
             Mãos talentosas, olhar único.
           </h2>
@@ -291,17 +402,22 @@ export default function HomePage() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
           {professionals.map((p) => (
-            <Card key={p.id} className="p-6 border-border/60 text-center group hover:border-primary/40 transition-colors">
+            <Card
+              key={p.id}
+              className="p-6 border-border/60 text-center group hover:border-primary/40 transition-colors"
+            >
               <div
                 className="size-20 mx-auto rounded-full flex items-center justify-center font-display text-2xl font-semibold text-primary-foreground"
                 style={{ background: p.color }}
               >
-                {p.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                {p.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)}
               </div>
               <p className="font-display text-lg font-semibold mt-4">{p.name}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {p.specialties.join(" · ")}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{p.specialties.join(" · ")}</p>
               <div className="flex justify-center gap-0.5 mt-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="size-3 fill-primary text-primary" />
@@ -316,17 +432,23 @@ export default function HomePage() {
       <section id="features" className="bg-card/40 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Para o seu salão</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+              Para o seu salão
+            </p>
             <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
               Tudo que você precisa pra crescer.
             </h2>
             <p className="text-muted-foreground mt-4">
-              Pensado por quem entende do dia a dia. Sem ruído, sem firula — só o essencial, bem feito.
+              Pensado por quem entende do dia a dia. Sem ruído, sem firula — só o essencial, bem
+              feito.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-14">
             {FEATURES.map((f) => (
-              <Card key={f.title} className="p-7 border-border/60 hover:border-primary/40 transition-colors group">
+              <Card
+                key={f.title}
+                className="p-7 border-border/60 hover:border-primary/40 transition-colors group"
+              >
                 <div className="size-11 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
                   <f.icon className="size-5 text-primary" strokeWidth={1.75} />
                 </div>
@@ -417,7 +539,9 @@ export default function HomePage() {
       <section className="bg-card/40 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Depoimentos</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+              Depoimentos
+            </p>
             <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
               Quem usa, ama.
             </h2>
@@ -444,7 +568,9 @@ export default function HomePage() {
       {/* ===== FAQ ===== */}
       <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Perguntas frequentes</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+            Perguntas frequentes
+          </p>
           <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
             Tudo certo pra começar?
           </h2>
@@ -479,12 +605,15 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">Visite-nos</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+                Visite-nos
+              </p>
               <h2 className="font-display text-4xl md:text-5xl font-semibold mt-3 tracking-tight">
                 Estamos esperando por você.
               </h2>
               <p className="text-muted-foreground mt-4">
-                Um espaço pensado para você relaxar, se cuidar e sair se sentindo a melhor versão de si mesma.
+                Um espaço pensado para você relaxar, se cuidar e sair se sentindo a melhor versão de
+                si mesma.
               </p>
               <div className="mt-8 space-y-4">
                 <div className="flex items-start gap-3">

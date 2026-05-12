@@ -11,7 +11,14 @@ import {
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 interface Props<T> {
@@ -21,7 +28,12 @@ interface Props<T> {
   emptyMessage?: ReactNode;
 }
 
-export default function DataTable<T>({ data, columns, searchPlaceholder = "Buscar...", emptyMessage }: Props<T>) {
+export default function DataTable<T>({
+  data,
+  columns,
+  searchPlaceholder = "Buscar...",
+  emptyMessage,
+}: Props<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -55,7 +67,10 @@ export default function DataTable<T>({ data, columns, searchPlaceholder = "Busca
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id} className="hover:bg-transparent border-border">
                 {hg.headers.map((h) => (
-                  <TableHead key={h.id} className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+                  <TableHead
+                    key={h.id}
+                    className="text-xs uppercase tracking-wider font-medium text-muted-foreground"
+                  >
                     {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
                 ))}
@@ -75,7 +90,10 @@ export default function DataTable<T>({ data, columns, searchPlaceholder = "Busca
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-12 text-muted-foreground">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-12 text-muted-foreground"
+                >
                   {emptyMessage ?? "Nenhum resultado encontrado."}
                 </TableCell>
               </TableRow>
@@ -88,10 +106,20 @@ export default function DataTable<T>({ data, columns, searchPlaceholder = "Busca
           Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
         </span>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
             <ChevronLeft className="size-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
             <ChevronRight className="size-4" />
           </Button>
         </div>

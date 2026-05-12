@@ -35,6 +35,7 @@ export interface Client {
   notes?: string;
   avatar?: string;
   visits: number;
+  codigo?: string;
 }
 
 export interface Service {
@@ -75,16 +76,47 @@ export interface Transaction {
 
 const id = () => Math.random().toString(36).slice(2, 10);
 
-const SPECIALTIES = ["Corte", "Coloração", "Manicure", "Pedicure", "Lash", "Sobrancelha", "Estética", "Massagem"];
+const SPECIALTIES = [
+  "Corte",
+  "Coloração",
+  "Manicure",
+  "Pedicure",
+  "Lash",
+  "Sobrancelha",
+  "Estética",
+  "Massagem",
+];
 const CATEGORIES = ["Cabelo", "Unhas", "Estética", "Sobrancelha"];
 const COLORS = ["#E8B4B8", "#D8A7B1", "#C9ADA7", "#B5838D", "#E5989B", "#F4A6A6"];
 
 function seed() {
   const salonId = "salon_demo";
   const salons: Salon[] = [
-    { id: salonId, name: "Studio Belle", logo: "", phone: "(11) 99999-0000", address: "Rua das Flores, 123", plan: "pro", active: true },
-    { id: "salon_2", name: "Rosé Atelier", phone: "(11) 98888-1111", address: "Av. Paulista, 200", plan: "starter", active: true },
-    { id: "salon_3", name: "Nude Beauty", phone: "(11) 97777-2222", address: "Rua Augusta, 50", plan: "premium", active: false },
+    {
+      id: salonId,
+      name: "Studio Belle",
+      logo: "",
+      phone: "(11) 99999-0000",
+      address: "Rua das Flores, 123",
+      plan: "pro",
+      active: true,
+    },
+    {
+      id: "salon_2",
+      name: "Rosé Atelier",
+      phone: "(11) 98888-1111",
+      address: "Av. Paulista, 200",
+      plan: "starter",
+      active: true,
+    },
+    {
+      id: "salon_3",
+      name: "Nude Beauty",
+      phone: "(11) 97777-2222",
+      address: "Rua Augusta, 50",
+      plan: "premium",
+      active: false,
+    },
   ];
 
   const professionals: Professional[] = Array.from({ length: 5 }).map((_, i) => ({
@@ -97,8 +129,40 @@ function seed() {
     color: COLORS[i % COLORS.length],
   }));
 
-  const firstNames = ["Ana", "Beatriz", "Carla", "Daniela", "Eduarda", "Fernanda", "Gabriela", "Helena", "Isabela", "Joana", "Karina", "Larissa", "Mariana", "Natália", "Olívia", "Patrícia", "Rafaela", "Sabrina", "Tatiana", "Vanessa"];
-  const lastNames = ["Silva", "Souza", "Costa", "Lima", "Pereira", "Almeida", "Ribeiro", "Castro", "Mendes", "Rocha"];
+  const firstNames = [
+    "Ana",
+    "Beatriz",
+    "Carla",
+    "Daniela",
+    "Eduarda",
+    "Fernanda",
+    "Gabriela",
+    "Helena",
+    "Isabela",
+    "Joana",
+    "Karina",
+    "Larissa",
+    "Mariana",
+    "Natália",
+    "Olívia",
+    "Patrícia",
+    "Rafaela",
+    "Sabrina",
+    "Tatiana",
+    "Vanessa",
+  ];
+  const lastNames = [
+    "Silva",
+    "Souza",
+    "Costa",
+    "Lima",
+    "Pereira",
+    "Almeida",
+    "Ribeiro",
+    "Castro",
+    "Mendes",
+    "Rocha",
+  ];
 
   const clients: Client[] = Array.from({ length: 32 }).map((_, i) => ({
     id: `cli_${i + 1}`,
@@ -106,24 +170,136 @@ function seed() {
     name: `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`,
     phone: `(11) 9${(8000 + i).toString()}-${(1000 + i * 7).toString().slice(0, 4)}`,
     email: `cliente${i + 1}@email.com`,
-    birthday: dayjs().subtract(20 + (i % 30), "year").subtract(i, "day").format("YYYY-MM-DD"),
+    birthday: dayjs()
+      .subtract(20 + (i % 30), "year")
+      .subtract(i, "day")
+      .format("YYYY-MM-DD"),
     notes: i % 4 === 0 ? "Prefere atendimento à tarde" : undefined,
     visits: (i * 3) % 25,
+    codigo: `A${1000 + i}`,
   }));
 
   const services: Service[] = [
-    { id: "srv_1", salonId, name: "Corte Feminino", category: "Cabelo", durationMin: 60, price: 90, commission: 40, active: true },
-    { id: "srv_2", salonId, name: "Escova", category: "Cabelo", durationMin: 45, price: 70, commission: 40, active: true },
-    { id: "srv_3", salonId, name: "Coloração", category: "Cabelo", durationMin: 120, price: 220, commission: 35, active: true },
-    { id: "srv_4", salonId, name: "Hidratação", category: "Cabelo", durationMin: 60, price: 110, commission: 35, active: true },
-    { id: "srv_5", salonId, name: "Manicure", category: "Unhas", durationMin: 45, price: 50, commission: 50, active: true },
-    { id: "srv_6", salonId, name: "Pedicure", category: "Unhas", durationMin: 60, price: 60, commission: 50, active: true },
-    { id: "srv_7", salonId, name: "Esmaltação em Gel", category: "Unhas", durationMin: 75, price: 90, commission: 45, active: true },
-    { id: "srv_8", salonId, name: "Design de Sobrancelha", category: "Sobrancelha", durationMin: 30, price: 45, commission: 50, active: true },
-    { id: "srv_9", salonId, name: "Lash Extension", category: "Estética", durationMin: 90, price: 180, commission: 40, active: true },
-    { id: "srv_10", salonId, name: "Limpeza de Pele", category: "Estética", durationMin: 90, price: 160, commission: 35, active: true },
-    { id: "srv_11", salonId, name: "Massagem Relaxante", category: "Estética", durationMin: 60, price: 140, commission: 40, active: true },
-    { id: "srv_12", salonId, name: "Henna Sobrancelha", category: "Sobrancelha", durationMin: 45, price: 65, commission: 45, active: false },
+    {
+      id: "srv_1",
+      salonId,
+      name: "Corte Feminino",
+      category: "Cabelo",
+      durationMin: 60,
+      price: 90,
+      commission: 40,
+      active: true,
+    },
+    {
+      id: "srv_2",
+      salonId,
+      name: "Escova",
+      category: "Cabelo",
+      durationMin: 45,
+      price: 70,
+      commission: 40,
+      active: true,
+    },
+    {
+      id: "srv_3",
+      salonId,
+      name: "Coloração",
+      category: "Cabelo",
+      durationMin: 120,
+      price: 220,
+      commission: 35,
+      active: true,
+    },
+    {
+      id: "srv_4",
+      salonId,
+      name: "Hidratação",
+      category: "Cabelo",
+      durationMin: 60,
+      price: 110,
+      commission: 35,
+      active: true,
+    },
+    {
+      id: "srv_5",
+      salonId,
+      name: "Manicure",
+      category: "Unhas",
+      durationMin: 45,
+      price: 50,
+      commission: 50,
+      active: true,
+    },
+    {
+      id: "srv_6",
+      salonId,
+      name: "Pedicure",
+      category: "Unhas",
+      durationMin: 60,
+      price: 60,
+      commission: 50,
+      active: true,
+    },
+    {
+      id: "srv_7",
+      salonId,
+      name: "Esmaltação em Gel",
+      category: "Unhas",
+      durationMin: 75,
+      price: 90,
+      commission: 45,
+      active: true,
+    },
+    {
+      id: "srv_8",
+      salonId,
+      name: "Design de Sobrancelha",
+      category: "Sobrancelha",
+      durationMin: 30,
+      price: 45,
+      commission: 50,
+      active: true,
+    },
+    {
+      id: "srv_9",
+      salonId,
+      name: "Lash Extension",
+      category: "Estética",
+      durationMin: 90,
+      price: 180,
+      commission: 40,
+      active: true,
+    },
+    {
+      id: "srv_10",
+      salonId,
+      name: "Limpeza de Pele",
+      category: "Estética",
+      durationMin: 90,
+      price: 160,
+      commission: 35,
+      active: true,
+    },
+    {
+      id: "srv_11",
+      salonId,
+      name: "Massagem Relaxante",
+      category: "Estética",
+      durationMin: 60,
+      price: 140,
+      commission: 40,
+      active: true,
+    },
+    {
+      id: "srv_12",
+      salonId,
+      name: "Henna Sobrancelha",
+      category: "Sobrancelha",
+      durationMin: 45,
+      price: 65,
+      commission: 45,
+      active: false,
+    },
   ];
 
   const appointments: Appointment[] = [];
@@ -135,11 +311,21 @@ function seed() {
       const pro = professionals[i % professionals.length];
       const svc = services[(i + Math.abs(d)) % services.length];
       const cli = clients[(i * 3 + Math.abs(d)) % clients.length];
-      const start = day.hour(9 + i * 2).minute(0).second(0);
+      const start = day
+        .hour(9 + i * 2)
+        .minute(0)
+        .second(0);
       const end = start.add(svc.durationMin, "minute");
-      const status: AppointmentStatus = d < 0
-        ? (i % 6 === 0 ? "cancelled" : i % 7 === 0 ? "no_show" : "completed")
-        : (i % 3 === 0 ? "confirmed" : "scheduled");
+      const status: AppointmentStatus =
+        d < 0
+          ? i % 6 === 0
+            ? "cancelled"
+            : i % 7 === 0
+              ? "no_show"
+              : "completed"
+          : i % 3 === 0
+            ? "confirmed"
+            : "scheduled";
       appointments.push({
         id: id(),
         salonId,
@@ -166,9 +352,33 @@ function seed() {
       description: "Atendimento",
     }));
   const expenses: Transaction[] = [
-    { id: id(), salonId, type: "expense", category: "Produtos", amount: 320, date: dayjs().subtract(2, "day").toISOString(), description: "Compra de esmaltes" },
-    { id: id(), salonId, type: "expense", category: "Aluguel", amount: 2200, date: dayjs().startOf("month").toISOString(), description: "Aluguel mensal" },
-    { id: id(), salonId, type: "expense", category: "Marketing", amount: 450, date: dayjs().subtract(5, "day").toISOString(), description: "Anúncios Instagram" },
+    {
+      id: id(),
+      salonId,
+      type: "expense",
+      category: "Produtos",
+      amount: 320,
+      date: dayjs().subtract(2, "day").toISOString(),
+      description: "Compra de esmaltes",
+    },
+    {
+      id: id(),
+      salonId,
+      type: "expense",
+      category: "Aluguel",
+      amount: 2200,
+      date: dayjs().startOf("month").toISOString(),
+      description: "Aluguel mensal",
+    },
+    {
+      id: id(),
+      salonId,
+      type: "expense",
+      category: "Marketing",
+      amount: 450,
+      date: dayjs().subtract(5, "day").toISOString(),
+      description: "Anúncios Instagram",
+    },
   ];
   const transactions: Transaction[] = [...incomes, ...expenses];
 
@@ -208,11 +418,18 @@ export const useDb = create<DbState>()(
     (set) => ({
       ...seed(),
       addClient: (c) => {
-        const item: Client = { ...c, id: id(), visits: 0 };
+        const lastCode = useDb
+          .getState()
+          .clients.find((cli) => cli.codigo?.startsWith("A"))?.codigo;
+        const lastNum = lastCode ? parseInt(lastCode.substring(1)) : 1000;
+        const newCode = `A${lastNum + 1 + Math.floor(Math.random() * 5)}`; // Incremento com um pouco de aleatoriedade para parecer real
+
+        const item: Client = { ...c, id: id(), visits: 0, codigo: newCode };
         set((s) => ({ clients: [item, ...s.clients] }));
         return item;
       },
-      updateClient: (idv, c) => set((s) => ({ clients: s.clients.map((x) => (x.id === idv ? { ...x, ...c } : x)) })),
+      updateClient: (idv, c) =>
+        set((s) => ({ clients: s.clients.map((x) => (x.id === idv ? { ...x, ...c } : x)) })),
       removeClient: (idv) => set((s) => ({ clients: s.clients.filter((x) => x.id !== idv) })),
 
       addProfessional: (p) => {
@@ -220,15 +437,20 @@ export const useDb = create<DbState>()(
         set((s) => ({ professionals: [item, ...s.professionals] }));
         return item;
       },
-      updateProfessional: (idv, p) => set((s) => ({ professionals: s.professionals.map((x) => (x.id === idv ? { ...x, ...p } : x)) })),
-      removeProfessional: (idv) => set((s) => ({ professionals: s.professionals.filter((x) => x.id !== idv) })),
+      updateProfessional: (idv, p) =>
+        set((s) => ({
+          professionals: s.professionals.map((x) => (x.id === idv ? { ...x, ...p } : x)),
+        })),
+      removeProfessional: (idv) =>
+        set((s) => ({ professionals: s.professionals.filter((x) => x.id !== idv) })),
 
       addService: (sv) => {
         const item: Service = { ...sv, id: id() };
         set((s) => ({ services: [item, ...s.services] }));
         return item;
       },
-      updateService: (idv, sv) => set((s) => ({ services: s.services.map((x) => (x.id === idv ? { ...x, ...sv } : x)) })),
+      updateService: (idv, sv) =>
+        set((s) => ({ services: s.services.map((x) => (x.id === idv ? { ...x, ...sv } : x)) })),
       removeService: (idv) => set((s) => ({ services: s.services.filter((x) => x.id !== idv) })),
 
       addAppointment: (a) => {
@@ -236,16 +458,21 @@ export const useDb = create<DbState>()(
         set((s) => ({ appointments: [item, ...s.appointments] }));
         return item;
       },
-      updateAppointment: (idv, a) => set((s) => ({ appointments: s.appointments.map((x) => (x.id === idv ? { ...x, ...a } : x)) })),
-      removeAppointment: (idv) => set((s) => ({ appointments: s.appointments.filter((x) => x.id !== idv) })),
+      updateAppointment: (idv, a) =>
+        set((s) => ({
+          appointments: s.appointments.map((x) => (x.id === idv ? { ...x, ...a } : x)),
+        })),
+      removeAppointment: (idv) =>
+        set((s) => ({ appointments: s.appointments.filter((x) => x.id !== idv) })),
 
       addTransaction: (t) => {
         const item: Transaction = { ...t, id: id() };
         set((s) => ({ transactions: [item, ...s.transactions] }));
         return item;
       },
-      updateSalon: (idv, sv) => set((s) => ({ salons: s.salons.map((x) => (x.id === idv ? { ...x, ...sv } : x)) })),
+      updateSalon: (idv, sv) =>
+        set((s) => ({ salons: s.salons.map((x) => (x.id === idv ? { ...x, ...sv } : x)) })),
     }),
-    { name: "belle-mock-db", version: 1 }
-  )
+    { name: "belle-mock-db", version: 1 },
+  ),
 );

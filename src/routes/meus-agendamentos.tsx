@@ -6,7 +6,10 @@ export const Route = createFileRoute("/meus-agendamentos")({
   head: () => ({
     meta: [
       { title: "Meus Agendamentos — Belle" },
-      { name: "description", content: "Consulte seus horários agendados e histórico de atendimentos." },
+      {
+        name: "description",
+        content: "Consulte seus horários agendados e histórico de atendimentos.",
+      },
     ],
   }),
 });

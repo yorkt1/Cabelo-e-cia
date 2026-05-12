@@ -10,17 +10,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useDb } from "@/store/mockDb";
+import { useAuth } from "@/store/authStore";
 import { brl, dayjs, fmtDate, initials } from "@/utils/format";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { createClient } from "@supabase/supabase-js";
+import { supabaseUrl, supabaseAnonKey } from "@/utils/supabaseConfig";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 import { toast } from "sonner";
 
 const STEPS = ["Serviço", "Profissional", "Data e hora", "Seus dados"] as const;
 
 const TIMES = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-  "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
 ];
 
 export default function BookingPage() {
@@ -40,7 +60,10 @@ export default function BookingPage() {
   const availableTimes = useMemo(() => {
     if (!professionalId || !date || !service) return TIMES;
     const dayAppts = appointments.filter(
-      (a) => a.professionalId === professionalId && dayjs(a.start).isSame(date, "day") && a.status !== "cancelled"
+      (a) =>
+        a.professionalId === professionalId &&
+        dayjs(a.start).isSame(date, "day") &&
+        a.status !== "cancelled",
     );
     return TIMES.filter((t) => {
       const [h, m] = t.split(":").map(Number);
@@ -56,13 +79,23 @@ export default function BookingPage() {
     (step === 2 && !!date && !!time) ||
     (step === 3 && !!contact.name && !!contact.phone);
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!service) return;
     const [h, m] = time.split(":").map(Number);
     const start = dayjs(date).hour(h).minute(m).second(0);
     const end = start.add(service.durationMin, "minute");
 
-    let client = clients.find((c) => c.email === contact.email && contact.email !== "");
+    const { user } = useAuth();
+    
+    let client;
+    if (user && user.role === "client") {
+      client = clients.find(c => c.id === user.id);
+    }
+
+    if (!client) {
+      client = clients.find((c) => c.phone.replace(/\D/g, "") === contact.phone.replace(/\D/g, ""));
+    }
+
     if (!client) {
       client = addClient({
         salonId: "salon_demo",
@@ -72,20 +105,50 @@ export default function BookingPage() {
       });
     }
 
-    addAppointment({
+    // Dados formatados para a sua tabela 'agendamentos'
+    const supabaseData = {
+      nome_cliente: contact.name,
+      phone_cliente: contact.phone,
+      email_cliente: contact.email,
+      codigo_cliente: client.codigo, // Agora usa o formato A1423
+      tipo_corte: service.name,
+      valor: service.price,
+      duracao: service.durationMin,
+      horario: start.toISOString(),
+      status: "scheduled",
+      descricao: contact.notes,
+      barbeiro_nome: professional?.name,
+      barbeiro_email: professional?.email,
+      barbeiro_telefone: "", // Caso você queira adicionar depois no Professional
+      proprietario: "Cabelo e Cia",
+      proprietario_que_agendou: "Site",
+      forma_de_pagamento: "A definir",
+    };
+
+    const appointmentData = {
       salonId: "salon_demo",
       clientId: client.id,
       professionalId,
       serviceIds: [serviceId],
       start: start.toISOString(),
       end: end.toISOString(),
-      status: "scheduled",
+      status: "scheduled" as const,
       notes: contact.notes,
       total: service.price,
-    });
+    };
 
-    toast.success("Agendamento confirmado!");
-    setDone(true);
+    // Insert into Supabase (tabela correta: agendamentos)
+    const { error } = await supabase.from("agendamentos").insert(supabaseData);
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+      toast.error("Erro ao sincronizar com o banco de dados.");
+    } else {
+      // Also add locally
+      addAppointment(appointmentData);
+      toast.success("Agendamento confirmado!");
+      setDone(true);
+    }
   }
 
   if (done) {
@@ -93,14 +156,18 @@ export default function BookingPage() {
       <div className="min-h-screen flex flex-col bg-background">
         <PublicHeader />
         <main className="flex-1 max-w-2xl mx-auto w-full px-6 py-20 text-center">
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4 }}>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <div className="size-20 mx-auto rounded-full bg-primary/15 flex items-center justify-center">
               <Check className="size-10 text-primary" strokeWidth={2} />
             </div>
             <h1 className="font-display text-4xl font-semibold mt-8">Tudo certo!</h1>
             <p className="text-muted-foreground mt-3 max-w-md mx-auto">
-              Enviamos a confirmação para <strong>{contact.email || contact.phone}</strong>.
-              Nos vemos em breve.
+              Enviamos a confirmação para <strong>{contact.email || contact.phone}</strong>. Nos
+              vemos em breve.
             </p>
             <Card className="mt-10 p-6 text-left border-border/60">
               <div className="space-y-3 text-sm">
@@ -112,12 +179,17 @@ export default function BookingPage() {
               </div>
             </Card>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-              <Link to="/" className="px-5 py-3 rounded-xl border border-border hover:bg-secondary text-sm font-medium order-2 sm:order-1">
+              <Link
+                to="/"
+                className="px-5 py-3 rounded-xl border border-border hover:bg-secondary text-sm font-medium order-2 sm:order-1"
+              >
                 Voltar ao início
               </Link>
               <button
                 onClick={() => {
-                  toast.info("Copiado para o clipboard!", { description: "00020126580014BR.GOV.BCB.PIX..." });
+                  toast.info("Copiado para o clipboard!", {
+                    description: "00020126580014BR.GOV.BCB.PIX...",
+                  });
                 }}
                 className="px-5 py-3 rounded-xl bg-[#00bdae] text-white hover:bg-[#00bdae]/90 text-sm font-medium flex items-center justify-center gap-2 order-1 sm:order-2 shadow-lg shadow-[#00bdae]/20"
               >
@@ -148,16 +220,25 @@ export default function BookingPage() {
                     "size-9 rounded-full flex items-center justify-center text-sm font-medium border transition-colors",
                     i < step && "bg-primary text-primary-foreground border-primary",
                     i === step && "border-primary text-primary bg-primary/10",
-                    i > step && "border-border text-muted-foreground"
+                    i > step && "border-border text-muted-foreground",
                   )}
                 >
                   {i < step ? <Check className="size-4" /> : i + 1}
                 </div>
-                <span className={cn("text-[11px] text-center", i <= step ? "text-foreground" : "text-muted-foreground")}>
+                <span
+                  className={cn(
+                    "text-[11px] text-center",
+                    i <= step ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
                   {label}
                 </span>
               </div>
-              {i < STEPS.length - 1 && <div className={cn("h-px flex-1 mx-2 -mt-6", i < step ? "bg-primary" : "bg-border")} />}
+              {i < STEPS.length - 1 && (
+                <div
+                  className={cn("h-px flex-1 mx-2 -mt-6", i < step ? "bg-primary" : "bg-border")}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -173,38 +254,52 @@ export default function BookingPage() {
             >
               {step === 0 && (
                 <div>
-                  <h2 className="font-display text-2xl md:text-3xl font-semibold">Qual serviço você deseja?</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Escolha o que vamos cuidar hoje.</p>
+                  <h2 className="font-display text-2xl md:text-3xl font-semibold">
+                    Qual serviço você deseja?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Escolha o que vamos cuidar hoje.
+                  </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
-                    {services.filter((s) => s.active).map((s) => {
-                      const active = serviceId === s.id;
-                      return (
-                        <button
-                          key={s.id}
-                          onClick={() => setServiceId(s.id)}
-                          className={cn(
-                            "text-left rounded-xl border p-5 transition-all",
-                            active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 bg-card"
-                          )}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="font-medium">{s.name}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{s.category} · {s.durationMin} min</p>
+                    {services
+                      .filter((s) => s.active)
+                      .map((s) => {
+                        const active = serviceId === s.id;
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => setServiceId(s.id)}
+                            className={cn(
+                              "text-left rounded-xl border p-5 transition-all",
+                              active
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/40 bg-card",
+                            )}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <p className="font-medium">{s.name}</p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {s.category} · {s.durationMin} min
+                                </p>
+                              </div>
+                              <p className="font-display text-lg font-semibold">{brl(s.price)}</p>
                             </div>
-                            <p className="font-display text-lg font-semibold">{brl(s.price)}</p>
-                          </div>
-                        </button>
-                      );
-                    })}
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               )}
 
               {step === 1 && (
                 <div>
-                  <h2 className="font-display text-2xl md:text-3xl font-semibold">Com quem você quer ser atendida?</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Escolha sua profissional preferida.</p>
+                  <h2 className="font-display text-2xl md:text-3xl font-semibold">
+                    Com quem você quer ser atendida?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Escolha sua profissional preferida.
+                  </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-8">
                     {professionals.map((p) => {
                       const active = professionalId === p.id;
@@ -214,14 +309,20 @@ export default function BookingPage() {
                           onClick={() => setProfessionalId(p.id)}
                           className={cn(
                             "rounded-xl border p-5 transition-all flex flex-col items-center text-center",
-                            active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 bg-card"
+                            active
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/40 bg-card",
                           )}
                         >
                           <Avatar className="size-14">
-                            <AvatarFallback className="text-white" style={{ background: p.color }}>{initials(p.name)}</AvatarFallback>
+                            <AvatarFallback className="text-white" style={{ background: p.color }}>
+                              {initials(p.name)}
+                            </AvatarFallback>
                           </Avatar>
                           <p className="font-medium mt-3">{p.name}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{p.specialties.slice(0, 2).join(" · ")}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {p.specialties.slice(0, 2).join(" · ")}
+                          </p>
                         </button>
                       );
                     })}
@@ -231,25 +332,42 @@ export default function BookingPage() {
 
               {step === 2 && (
                 <div>
-                  <h2 className="font-display text-2xl md:text-3xl font-semibold">Quando fica bom?</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Selecione data e horário disponíveis.</p>
+                  <h2 className="font-display text-2xl md:text-3xl font-semibold">
+                    Quando fica bom?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Selecione data e horário disponíveis.
+                  </p>
                   <div className="grid md:grid-cols-2 gap-8 mt-8">
                     <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground"><CalIcon className="size-3.5 inline mr-1.5" />Data</Label>
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        <CalIcon className="size-3.5 inline mr-1.5" />
+                        Data
+                      </Label>
                       <Input
                         type="date"
                         value={date}
                         min={dayjs().format("YYYY-MM-DD")}
-                        onChange={(e) => { setDate(e.target.value); setTime(""); }}
+                        onChange={(e) => {
+                          setDate(e.target.value);
+                          setTime("");
+                        }}
                         className="mt-2"
                       />
-                      <p className="text-xs text-muted-foreground mt-3">{dayjs(date).format("dddd, DD [de] MMMM")}</p>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        {dayjs(date).format("dddd, DD [de] MMMM")}
+                      </p>
                     </div>
                     <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground"><Clock className="size-3.5 inline mr-1.5" />Horário</Label>
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        <Clock className="size-3.5 inline mr-1.5" />
+                        Horário
+                      </Label>
                       <div className="grid grid-cols-3 gap-2 mt-2">
                         {availableTimes.length === 0 && (
-                          <p className="col-span-3 text-sm text-muted-foreground py-6 text-center">Sem horários nesse dia. Tente outra data.</p>
+                          <p className="col-span-3 text-sm text-muted-foreground py-6 text-center">
+                            Sem horários nesse dia. Tente outra data.
+                          </p>
                         )}
                         {availableTimes.map((t) => (
                           <button
@@ -257,7 +375,9 @@ export default function BookingPage() {
                             onClick={() => setTime(t)}
                             className={cn(
                               "py-2.5 rounded-lg border text-sm transition-colors",
-                              time === t ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/40 bg-card"
+                              time === t
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "border-border hover:border-primary/40 bg-card",
                             )}
                           >
                             {t}
@@ -272,15 +392,48 @@ export default function BookingPage() {
               {step === 3 && (
                 <div>
                   <h2 className="font-display text-2xl md:text-3xl font-semibold">Quase lá!</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Para confirmarmos e enviarmos lembretes.</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Para confirmarmos e enviarmos lembretes.
+                  </p>
                   <div className="grid md:grid-cols-2 gap-4 mt-8">
-                    <div className="space-y-2"><Label>Nome completo *</Label><Input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} /></div>
-                    <div className="space-y-2"><Label>Telefone *</Label><Input value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} placeholder="(11) 99999-0000" /></div>
-                    <div className="space-y-2 md:col-span-2"><Label>Email</Label><Input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} /></div>
-                    <div className="space-y-2 md:col-span-2"><Label>Observações (opcional)</Label><Textarea rows={3} value={contact.notes} onChange={(e) => setContact({ ...contact, notes: e.target.value })} placeholder="Algum detalhe importante para a profissional?" /></div>
+                    <div className="space-y-2">
+                      <Label>Nome completo *</Label>
+                      <Input
+                        value={contact.name}
+                        onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Telefone *</Label>
+                      <Input
+                        value={contact.phone}
+                        onChange={(e) => setContact({ ...contact, phone: e.target.value })}
+                        placeholder="(11) 99999-0000"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Email</Label>
+                      <Input
+                        type="email"
+                        value={contact.email}
+                        onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Observações (opcional)</Label>
+                      <Textarea
+                        rows={3}
+                        value={contact.notes}
+                        onChange={(e) => setContact({ ...contact, notes: e.target.value })}
+                        placeholder="Algum detalhe importante para a profissional?"
+                      />
+                    </div>
                   </div>
                   <div className="mt-8 rounded-xl bg-secondary/50 p-5 border border-border/60">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5"><Sparkles className="size-3.5 text-primary" />Resumo</p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-primary" />
+                      Resumo
+                    </p>
                     <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
                       <Row label="Serviço" value={service?.name ?? ""} />
                       <Row label="Profissional" value={professional?.name ?? ""} />
@@ -295,7 +448,10 @@ export default function BookingPage() {
           </AnimatePresence>
 
           <div className="flex justify-between items-center mt-10 pt-6 border-t border-border">
-            <Button variant="ghost" onClick={() => (step === 0 ? navigate({ to: "/" }) : setStep(step - 1))}>
+            <Button
+              variant="ghost"
+              onClick={() => (step === 0 ? navigate({ to: "/" }) : setStep(step - 1))}
+            >
               <ArrowLeft className="size-4" /> Voltar
             </Button>
             {step < 3 ? (

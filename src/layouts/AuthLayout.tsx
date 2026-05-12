@@ -7,7 +7,9 @@ export default function AuthLayout() {
         <div className="absolute -top-32 -left-32 size-96 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 size-[28rem] rounded-full bg-accent/30 blur-3xl pointer-events-none" />
         <Link to="/" className="flex items-center gap-3 relative z-10">
-          <div className="size-10 rounded-xl bg-card flex items-center justify-center font-display font-semibold text-foreground">B</div>
+          <div className="size-10 rounded-xl bg-card flex items-center justify-center font-display font-semibold text-foreground">
+            B
+          </div>
           <span className="font-display text-2xl font-semibold">Belle</span>
         </Link>
         <div className="relative z-10 max-w-md">

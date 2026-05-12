@@ -16,10 +16,17 @@ export default function StatCard({ label, value, delta, icon: Icon, trend }: Pro
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{label}</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+              {label}
+            </p>
             <p className="font-display text-3xl font-semibold">{value}</p>
             {delta && (
-              <p className={cn("text-xs font-medium", trend === "up" ? "text-emerald-600" : "text-rose-600")}>
+              <p
+                className={cn(
+                  "text-xs font-medium",
+                  trend === "up" ? "text-emerald-600" : "text-rose-600",
+                )}
+              >
                 {delta}
               </p>
             )}

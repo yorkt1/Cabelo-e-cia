@@ -26,9 +26,24 @@ import { initials } from "@/utils/format";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["owner", "admin", "professional", "receptionist"] },
-  { to: "/agenda", label: "Agenda", icon: Calendar, roles: ["owner", "admin", "professional", "receptionist"] },
-  { to: "/clientes", label: "Clientes", icon: Users, roles: ["owner", "admin", "professional", "receptionist"] },
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    roles: ["owner", "admin", "professional", "receptionist"],
+  },
+  {
+    to: "/agenda",
+    label: "Agenda",
+    icon: Calendar,
+    roles: ["owner", "admin", "professional", "receptionist"],
+  },
+  {
+    to: "/clientes",
+    label: "Clientes",
+    icon: Users,
+    roles: ["owner", "admin", "professional", "receptionist"],
+  },
   { to: "/profissionais", label: "Profissionais", icon: UserCircle, roles: ["owner", "admin"] },
   { to: "/servicos", label: "Serviços", icon: Scissors, roles: ["owner", "admin"] },
   { to: "/financeiro", label: "Financeiro", icon: DollarSign, roles: ["owner"] },
@@ -62,7 +77,7 @@ export default function AppLayout() {
       <aside
         className={cn(
           "hidden md:flex flex-col border-r border-border bg-sidebar transition-all duration-300",
-          sidebarCollapsed ? "w-[76px]" : "w-[260px]"
+          sidebarCollapsed ? "w-[76px]" : "w-[260px]",
         )}
       >
         <div className="flex items-center gap-3 px-5 h-16 border-b border-border">
@@ -77,32 +92,34 @@ export default function AppLayout() {
           )}
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {NAV.filter((item) => (item.roles as unknown as string[]).includes(user.role)).map((item) => {
-            const active = path.startsWith(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary/15 text-foreground"
-                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
-                )}
-              >
-                <Icon className="size-[18px] shrink-0" strokeWidth={1.75} />
-                {!sidebarCollapsed && <span>{item.label}</span>}
-              </Link>
-            );
-          })}
+          {NAV.filter((item) => (item.roles as unknown as string[]).includes(user.role)).map(
+            (item) => {
+              const active = path.startsWith(item.to);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary/15 text-foreground"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+                  )}
+                >
+                  <Icon className="size-[18px] shrink-0" strokeWidth={1.75} />
+                  {!sidebarCollapsed && <span>{item.label}</span>}
+                </Link>
+              );
+            },
+          )}
         </nav>
         {user.role === "owner" && (
           <div className="p-3 border-t border-border space-y-1">
             <Link
               to="/admin"
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
               )}
             >
               <Crown className="size-[18px]" strokeWidth={1.75} />
@@ -115,7 +132,12 @@ export default function AppLayout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center px-4 md:px-6 gap-3">
-          <Button variant="ghost" size="icon" onClick={() => setSidebar(!sidebarCollapsed)} className="hidden md:inline-flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebar(!sidebarCollapsed)}
+            className="hidden md:inline-flex"
+          >
             <Menu className="size-5" />
           </Button>
           <div className="flex-1" />
@@ -132,10 +154,19 @@ export default function AppLayout() {
             </div>
             <Link to="/perfil">
               <Avatar className="size-9">
-                <AvatarFallback className="bg-primary/20 text-foreground text-sm">{initials(user.name)}</AvatarFallback>
+                <AvatarFallback className="bg-primary/20 text-foreground text-sm">
+                  {initials(user.name)}
+                </AvatarFallback>
               </Avatar>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => { logout(); navigate({ to: "/login" }); }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                logout();
+                navigate({ to: "/login" });
+              }}
+            >
               <LogOut className="size-5" />
             </Button>
           </div>

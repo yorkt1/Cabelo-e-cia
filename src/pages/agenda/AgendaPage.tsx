@@ -19,22 +19,23 @@ export default function AgendaPage() {
   const calRef = useRef<FullCalendar>(null);
 
   const events = useMemo(
-    () => appointments.map((a) => {
-      const pro = professionals.find((p) => p.id === a.professionalId);
-      const cli = clients.find((c) => c.id === a.clientId);
-      const svc = services.find((s) => s.id === a.serviceIds[0]);
-      return {
-        id: a.id,
-        title: `${cli?.name ?? "Cliente"} · ${svc?.name ?? ""}`,
-        start: a.start,
-        end: a.end,
-        backgroundColor: pro?.color ?? "var(--primary)",
-        borderColor: pro?.color ?? "var(--primary)",
-        textColor: "#fff",
-        extendedProps: { appt: a },
-      };
-    }),
-    [appointments, professionals, clients, services]
+    () =>
+      appointments.map((a) => {
+        const pro = professionals.find((p) => p.id === a.professionalId);
+        const cli = clients.find((c) => c.id === a.clientId);
+        const svc = services.find((s) => s.id === a.serviceIds[0]);
+        return {
+          id: a.id,
+          title: `${cli?.name ?? "Cliente"} · ${svc?.name ?? ""}`,
+          start: a.start,
+          end: a.end,
+          backgroundColor: pro?.color ?? "var(--primary)",
+          borderColor: pro?.color ?? "var(--primary)",
+          textColor: "#fff",
+          extendedProps: { appt: a },
+        };
+      }),
+    [appointments, professionals, clients, services],
   );
 
   return (
@@ -43,7 +44,14 @@ export default function AgendaPage() {
         title="Agenda"
         description="Arraste para reagendar. Clique em um horário para criar."
         actions={
-          <Button onClick={() => { setEditing(null); setInitialStart(null); setOpen(true); }} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setInitialStart(null);
+              setOpen(true);
+            }}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             <Plus className="size-4" /> Novo agendamento
           </Button>
         }
@@ -53,7 +61,11 @@ export default function AgendaPage() {
           ref={calRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"
-          headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" }}
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
           locale="pt-br"
           buttonText={{ today: "Hoje", month: "Mês", week: "Semana", day: "Dia" }}
           allDaySlot={false}
@@ -83,7 +95,12 @@ export default function AgendaPage() {
           }}
         />
       </Card>
-      <AppointmentModal open={open} onOpenChange={setOpen} editing={editing} initialStart={initialStart} />
+      <AppointmentModal
+        open={open}
+        onOpenChange={setOpen}
+        editing={editing}
+        initialStart={initialStart}
+      />
     </div>
   );
 }

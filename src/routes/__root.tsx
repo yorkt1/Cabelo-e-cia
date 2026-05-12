@@ -74,10 +74,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Belle — Agenda Profissional" },
-      { name: "description", content: "Sistema de agendamento para salões, barbearias e estética." },
+      {
+        name: "description",
+        content: "Sistema de agendamento para salões, barbearias e estética.",
+      },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Belle — Agenda Profissional" },
-      { property: "og:description", content: "Sistema de agendamento para salões, barbearias e estética." },
+      {
+        property: "og:description",
+        content: "Sistema de agendamento para salões, barbearias e estética.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },

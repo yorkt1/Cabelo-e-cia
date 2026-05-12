@@ -21,7 +21,13 @@ export default function ProfessionalsPage() {
         title="Profissionais"
         description={`${professionals.length} no time`}
         actions={
-          <Button onClick={() => { setEditing(null); setOpen(true); }} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             <Plus className="size-4" /> Novo profissional
           </Button>
         }
@@ -32,21 +38,56 @@ export default function ProfessionalsPage() {
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <Avatar className="size-14" style={{ backgroundColor: p.color }}>
-                  <AvatarFallback className="text-white font-medium" style={{ backgroundColor: p.color }}>{initials(p.name)}</AvatarFallback>
+                  <AvatarFallback
+                    className="text-white font-medium"
+                    style={{ backgroundColor: p.color }}
+                  >
+                    {initials(p.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="font-display text-lg font-semibold truncate">{p.name}</p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5"><Mail className="size-3" /> {p.email}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Mail className="size-3" /> {p.email}
+                  </p>
                   <div className="flex flex-wrap gap-1.5 mt-3">
-                    {p.specialties.map((s) => <Badge key={s} variant="secondary" className="bg-secondary text-secondary-foreground text-[10px]">{s}</Badge>)}
+                    {p.specialties.map((s) => (
+                      <Badge
+                        key={s}
+                        variant="secondary"
+                        className="bg-secondary text-secondary-foreground text-[10px]"
+                      >
+                        {s}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-5 pt-4 border-t border-border">
-                <span className="text-xs text-muted-foreground">Comissão <span className="font-semibold text-foreground">{p.commission}%</span></span>
+                <span className="text-xs text-muted-foreground">
+                  Comissão <span className="font-semibold text-foreground">{p.commission}%</span>
+                </span>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" onClick={() => { setEditing(p); setOpen(true); }}><Pencil className="size-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => { removeProfessional(p.id); toast.success("Removido"); }}><Trash2 className="size-4 text-destructive" /></Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditing(p);
+                      setOpen(true);
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      removeProfessional(p.id);
+                      toast.success("Removido");
+                    }}
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
                 </div>
               </div>
             </CardContent>

@@ -1,11 +1,23 @@
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDb, type Appointment, type AppointmentStatus } from "@/store/mockDb";
 import { dayjs } from "@/utils/format";
 import { toast } from "sonner";
@@ -27,7 +39,8 @@ interface Form {
 }
 
 export default function AppointmentModal({ open, onOpenChange, editing, initialStart }: Props) {
-  const { clients, professionals, services, addAppointment, updateAppointment, removeAppointment } = useDb();
+  const { clients, professionals, services, addAppointment, updateAppointment, removeAppointment } =
+    useDb();
   const { register, handleSubmit, reset, control } = useForm<Form>();
 
   useEffect(() => {
@@ -46,7 +59,9 @@ export default function AppointmentModal({ open, onOpenChange, editing, initialS
         clientId: clients[0]?.id,
         professionalId: professionals[0]?.id,
         serviceId: services[0]?.id,
-        start: initialStart ? dayjs(initialStart).format("YYYY-MM-DDTHH:mm") : dayjs().format("YYYY-MM-DDTHH:mm"),
+        start: initialStart
+          ? dayjs(initialStart).format("YYYY-MM-DDTHH:mm")
+          : dayjs().format("YYYY-MM-DDTHH:mm"),
         status: "scheduled",
         notes: "",
       });
@@ -60,13 +75,16 @@ export default function AppointmentModal({ open, onOpenChange, editing, initialS
     const end = start.add(svc.durationMin, "minute");
 
     // conflict check
-    const conflict = useDb.getState().appointments.some((a) =>
-      a.id !== editing?.id &&
-      a.professionalId === values.professionalId &&
-      a.status !== "cancelled" &&
-      dayjs(a.start).isBefore(end) &&
-      dayjs(a.end).isAfter(start)
-    );
+    const conflict = useDb
+      .getState()
+      .appointments.some(
+        (a) =>
+          a.id !== editing?.id &&
+          a.professionalId === values.professionalId &&
+          a.status !== "cancelled" &&
+          dayjs(a.start).isBefore(end) &&
+          dayjs(a.end).isAfter(start),
+      );
     if (conflict) {
       toast.error("Conflito de horário com outro agendamento.");
       return;
@@ -98,36 +116,76 @@ export default function AppointmentModal({ open, onOpenChange, editing, initialS
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl">{editing ? "Editar" : "Novo"} agendamento</DialogTitle>
+          <DialogTitle className="font-display text-2xl">
+            {editing ? "Editar" : "Novo"} agendamento
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Cliente</Label>
-            <Controller name="clientId" control={control} render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-              </Select>
-            )} />
+            <Controller
+              name="clientId"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Profissional</Label>
-              <Controller name="professionalId" control={control} render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{professionals.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
-                </Select>
-              )} />
+              <Controller
+                name="professionalId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {professionals.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
             <div className="space-y-2">
               <Label>Serviço</Label>
-              <Controller name="serviceId" control={control} render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{services.filter(s => s.active).map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                </Select>
-              )} />
+              <Controller
+                name="serviceId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services
+                        .filter((s) => s.active)
+                        .map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -137,18 +195,24 @@ export default function AppointmentModal({ open, onOpenChange, editing, initialS
             </div>
             <div className="space-y-2">
               <Label>Status</Label>
-              <Controller name="status" control={control} render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="scheduled">Agendado</SelectItem>
-                    <SelectItem value="confirmed">Confirmado</SelectItem>
-                    <SelectItem value="completed">Concluído</SelectItem>
-                    <SelectItem value="cancelled">Cancelado</SelectItem>
-                    <SelectItem value="no_show">Não compareceu</SelectItem>
-                  </SelectContent>
-                </Select>
-              )} />
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="scheduled">Agendado</SelectItem>
+                      <SelectItem value="confirmed">Confirmado</SelectItem>
+                      <SelectItem value="completed">Concluído</SelectItem>
+                      <SelectItem value="cancelled">Cancelado</SelectItem>
+                      <SelectItem value="no_show">Não compareceu</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
           <div className="space-y-2">
@@ -157,11 +221,25 @@ export default function AppointmentModal({ open, onOpenChange, editing, initialS
           </div>
           <DialogFooter className="gap-2">
             {editing && (
-              <Button type="button" variant="outline" className="text-destructive" onClick={() => { removeAppointment(editing.id); toast.success("Removido"); onOpenChange(false); }}>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-destructive"
+                onClick={() => {
+                  removeAppointment(editing.id);
+                  toast.success("Removido");
+                  onOpenChange(false);
+                }}
+              >
                 Excluir
               </Button>
             )}
-            <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">Salvar</Button>
+            <Button
+              type="submit"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Salvar
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

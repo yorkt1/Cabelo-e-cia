@@ -17,16 +17,39 @@ export default function ServicesPage() {
   const [editing, setEditing] = useState<Service | null>(null);
 
   const cols: ColumnDef<Service>[] = [
-    { header: "Serviço", accessorKey: "name", cell: ({ row }) => <span className="font-medium">{row.original.name}</span> },
-    { header: "Categoria", accessorKey: "category", cell: ({ row }) => <Badge variant="outline" className="border-primary/30 text-primary">{row.original.category}</Badge> },
-    { header: "Duração", accessorKey: "durationMin", cell: ({ row }) => `${row.original.durationMin} min` },
+    {
+      header: "Serviço",
+      accessorKey: "name",
+      cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+    },
+    {
+      header: "Categoria",
+      accessorKey: "category",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="border-primary/30 text-primary">
+          {row.original.category}
+        </Badge>
+      ),
+    },
+    {
+      header: "Duração",
+      accessorKey: "durationMin",
+      cell: ({ row }) => `${row.original.durationMin} min`,
+    },
     { header: "Preço", accessorKey: "price", cell: ({ row }) => brl(row.original.price) },
-    { header: "Comissão", accessorKey: "commission", cell: ({ row }) => `${row.original.commission}%` },
+    {
+      header: "Comissão",
+      accessorKey: "commission",
+      cell: ({ row }) => `${row.original.commission}%`,
+    },
     {
       header: "Ativo",
       id: "active",
       cell: ({ row }) => (
-        <Switch checked={row.original.active} onCheckedChange={(v) => updateService(row.original.id, { active: v })} />
+        <Switch
+          checked={row.original.active}
+          onCheckedChange={(v) => updateService(row.original.id, { active: v })}
+        />
       ),
     },
     {
@@ -34,8 +57,26 @@ export default function ServicesPage() {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
-          <Button variant="ghost" size="icon" onClick={() => { setEditing(row.original); setOpen(true); }}><Pencil className="size-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => { removeService(row.original.id); toast.success("Removido"); }}><Trash2 className="size-4 text-destructive" /></Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setEditing(row.original);
+              setOpen(true);
+            }}
+          >
+            <Pencil className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              removeService(row.original.id);
+              toast.success("Removido");
+            }}
+          >
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
         </div>
       ),
     },
@@ -47,7 +88,13 @@ export default function ServicesPage() {
         title="Serviços"
         description={`${services.length} serviços disponíveis`}
         actions={
-          <Button onClick={() => { setEditing(null); setOpen(true); }} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             <Plus className="size-4" /> Novo serviço
           </Button>
         }

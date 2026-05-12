@@ -19,7 +19,11 @@ type Form = z.infer<typeof schema>;
 export default function RegisterPage() {
   const reg = useAuth((s) => s.register);
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Form>({ resolver: zodResolver(schema) });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Form>({ resolver: zodResolver(schema) });
 
   async function onSubmit(values: Form) {
     await reg(values);
@@ -53,13 +57,19 @@ export default function RegisterPage() {
           <Input type="password" {...register("password")} />
           {errors.password && <p className="text-xs text-destructive">Mínimo 6 caracteres</p>}
         </div>
-        <Button type="submit" disabled={isSubmitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           {isSubmitting ? "Criando..." : "Criar conta"}
         </Button>
       </form>
       <p className="text-sm text-center text-muted-foreground">
         Já tem conta?{" "}
-        <Link to="/login" className="text-primary font-medium hover:underline">Entrar</Link>
+        <Link to="/login" className="text-primary font-medium hover:underline">
+          Entrar
+        </Link>
       </p>
     </div>
   );

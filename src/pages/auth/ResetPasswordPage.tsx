@@ -15,7 +15,10 @@ export default function ResetPasswordPage() {
         <p className="text-sm text-muted-foreground mt-2">Defina uma nova senha para sua conta.</p>
       </div>
       <form
-        onSubmit={handleSubmit(() => { toast.success("Senha alterada"); navigate({ to: "/login" }); })}
+        onSubmit={handleSubmit(() => {
+          toast.success("Senha alterada");
+          navigate({ to: "/login" });
+        })}
         className="space-y-5"
       >
         <div className="space-y-2">
@@ -26,12 +29,17 @@ export default function ResetPasswordPage() {
           <Label>Confirmar senha</Label>
           <Input type="password" {...register("confirm", { required: true })} />
         </div>
-        <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           Salvar
         </Button>
       </form>
       <p className="text-sm text-center text-muted-foreground">
-        <Link to="/login" className="text-primary font-medium hover:underline">Voltar</Link>
+        <Link to="/login" className="text-primary font-medium hover:underline">
+          Voltar
+        </Link>
       </p>
     </div>
   );

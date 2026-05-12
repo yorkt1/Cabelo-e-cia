@@ -6,7 +6,11 @@ export const Route = createFileRoute("/agendar")({
   head: () => ({
     meta: [
       { title: "Agendar — Belle" },
-      { name: "description", content: "Agende seu horário em poucos segundos. Escolha serviço, profissional, data e pronto." },
+      {
+        name: "description",
+        content:
+          "Agende seu horário em poucos segundos. Escolha serviço, profissional, data e pronto.",
+      },
       { property: "og:title", content: "Agende seu horário — Belle" },
     ],
   }),

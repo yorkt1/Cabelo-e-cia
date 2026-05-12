@@ -21,12 +21,17 @@ export default function ForgotPasswordPage() {
           <Label>Email</Label>
           <Input type="email" {...register("email", { required: true })} />
         </div>
-        <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           Enviar link
         </Button>
       </form>
       <p className="text-sm text-center text-muted-foreground">
-        <Link to="/login" className="text-primary font-medium hover:underline">Voltar para login</Link>
+        <Link to="/login" className="text-primary font-medium hover:underline">
+          Voltar para login
+        </Link>
       </p>
     </div>
   );
