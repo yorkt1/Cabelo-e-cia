@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Calendar, Clock, Scissors, User, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PublicHeader from "@/components/common/PublicHeader";
@@ -26,6 +26,16 @@ export default function MyAppointments() {
   const { appointments, clients, services, professionals } = useDb();
   const { user, loginByPhone, registerClient, logout, isAuthenticated } = useAuth();
   const isClientAuthenticated = isAuthenticated && user?.role === "client";
+
+  useEffect(() => {
+    if (isClientAuthenticated && user) {
+      const appts = appointments
+        .filter((a) => a.clientId === user.id)
+        .sort((a, b) => dayjs(b.start).valueOf() - dayjs(a.start).valueOf());
+      setResults(appts);
+      setStep("appointments");
+    }
+  }, [isClientAuthenticated, user?.id, appointments]);
 
   async function handlePhoneSearch() {
     if (!phone) return;

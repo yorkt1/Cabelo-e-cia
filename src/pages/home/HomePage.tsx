@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
 import {
   Calendar,
   Sparkles,
@@ -126,6 +127,27 @@ const TESTIMONIALS = [
   },
 ];
 
+const TIMES = [
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+];
+
 const FAQ = [
   {
     q: "Preciso instalar algum aplicativo?",
@@ -153,13 +175,50 @@ export default function HomePage() {
   const services = useDb((s) => s.services)
     .filter((s) => s.active)
     .slice(0, 6);
-  const professionals = useDb((s) => s.professionals).slice(0, 4);
+  const allProfessionals = useDb((s) => s.professionals);
+  const professionals = allProfessionals.slice(0, 4);
+  const appointments = useDb((s) => s.appointments);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const today = useMemo(() => {
     const d = new Date();
     return d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
   }, []);
+
+  const todayDate = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
+  const [selectedSlots, setSelectedSlots] = useState<Record<string, string>>({});
+
+  const availableToday = useMemo(() => {
+    return allProfessionals.map((pro) => {
+      const blockedSlots = appointments
+        .filter(
+          (a) =>
+            a.professionalId === pro.id &&
+            a.status !== "cancelled" &&
+            dayjs(a.start).isSame(todayDate, "day"),
+        )
+        .map((a) => ({ start: dayjs(a.start), end: dayjs(a.end) }));
+
+      const slots = TIMES.filter((time) => {
+        const start = dayjs(`${todayDate}T${time}`);
+        const end = start.add(30, "minute");
+        if (start.isBefore(dayjs(), "minute")) return false;
+        return !blockedSlots.some((range) => start.isBefore(range.end) && end.isAfter(range.start));
+      }).slice(0, 3);
+
+      return { professional: pro, slots };
+    });
+  }, [allProfessionals, appointments, todayDate]);
+
+  useEffect(() => {
+    const defaults: Record<string, string> = {};
+    availableToday.forEach((item) => {
+      if (item.slots.length > 0) {
+        defaults[item.professional.id] = item.slots[0];
+      }
+    });
+    setSelectedSlots(defaults);
+  }, [availableToday]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -241,40 +300,70 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-primary font-medium">
-                    Próximo horário
+                    Horários disponíveis hoje
                   </p>
                   <p className="font-display text-lg font-semibold capitalize mt-0.5">{today}</p>
                 </div>
                 <span className="text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary font-medium">
-                  Disponível
+                  Amostra da agenda
                 </span>
               </div>
 
-              <div className="space-y-2">
-                {[
-                  { time: "09:00", name: "Corte + Escova", pro: "Camila", color: "#E8B4B8" },
-                  { time: "10:30", name: "Coloração", pro: "Bruna", color: "#C9ADA7" },
-                  { time: "14:00", name: "Manicure em Gel", pro: "Marina", color: "#E5989B" },
-                  { time: "16:30", name: "Design de Sobrancelha", pro: "Helena", color: "#D8A7B1" },
-                ].map((a) => (
+              <div className="space-y-3">
+                {availableToday.map((item) => (
                   <div
-                    key={a.time}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-background hover:border-primary/40 transition-colors cursor-pointer group"
+                    key={item.professional.id}
+                    className="rounded-2xl border border-border/60 bg-background p-4"
                   >
-                    <div
-                      className="size-10 rounded-lg flex items-center justify-center text-xs font-medium text-primary-foreground shrink-0"
-                      style={{ background: a.color }}
-                    >
-                      <Clock className="size-4" />
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold">{item.professional.name}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {item.professional.specialties.slice(0, 2).join(" · ")}
+                        </p>
+                      </div>
+                      <span className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+                        Hoje
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{a.name}</p>
-                      <p className="text-xs text-muted-foreground">com {a.pro}</p>
+                    <div className="mt-4 flex flex-wrap gap-2 items-center">
+                      {item.slots.length > 0 ? (
+                        item.slots.map((slot) => {
+                          const selected = selectedSlots[item.professional.id] === slot;
+                          return (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() =>
+                                setSelectedSlots((prev) => ({
+                                  ...prev,
+                                  [item.professional.id]: slot,
+                                }))
+                              }
+                              className={cn(
+                                "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                                selected
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-secondary/20 text-muted-foreground hover:bg-secondary/30",
+                              )}
+                            >
+                              {slot}
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sem horários livres hoje</span>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold">{a.time}</p>
+                    <div className="mt-4">
+                      <Link
+                        to="/agendar"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                      >
+                        Agendar horário agora
+                        <ArrowRight className="size-4" />
+                      </Link>
                     </div>
-                    <ArrowRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 ))}
               </div>

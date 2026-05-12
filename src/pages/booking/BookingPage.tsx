@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ArrowLeft, ArrowRight, Calendar as CalIcon, Clock, Sparkles } from "lucide-react";
@@ -45,6 +45,8 @@ const TIMES = [
 
 export default function BookingPage() {
   const { services, professionals, appointments, addAppointment, addClient, clients } = useDb();
+  const { user } = useAuth();
+  const client = user?.role === "client" ? clients.find((c) => c.id === user.id) : undefined;
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [serviceId, setServiceId] = useState<string>("");
@@ -52,10 +54,32 @@ export default function BookingPage() {
   const [date, setDate] = useState<string>(dayjs().add(1, "day").format("YYYY-MM-DD"));
   const [time, setTime] = useState<string>("");
   const [contact, setContact] = useState({ name: "", email: "", phone: "", notes: "" });
+  const [bookingFor, setBookingFor] = useState<"self" | "guest">(client ? "self" : "guest");
   const [done, setDone] = useState(false);
 
   const service = services.find((s) => s.id === serviceId);
   const professional = professionals.find((p) => p.id === professionalId);
+
+  useEffect(() => {
+    if (client && bookingFor === "self") {
+      setContact((prev) => ({
+        name: client.name || prev.name,
+        email: client.email || prev.email,
+        phone: client.phone || prev.phone,
+        notes: prev.notes,
+      }));
+      return;
+    }
+
+    if (bookingFor === "guest") {
+      setContact((prev) => ({
+        name: "",
+        email: "",
+        phone: "",
+        notes: prev.notes,
+      }));
+    }
+  }, [client, bookingFor]);
 
   const availableTimes = useMemo(() => {
     if (!professionalId || !date || !service) return TIMES;
@@ -76,8 +100,8 @@ export default function BookingPage() {
   const canProceed =
     (step === 0 && !!serviceId) ||
     (step === 1 && !!professionalId) ||
-    (step === 2 && !!date && !!time) ||
-    (step === 3 && !!contact.name && !!contact.phone);
+    (step === 2 && !!date && !!time && !!user) ||
+    (step === 3 && !!contact.name && !!contact.phone && (bookingFor === "self" || !!contact.email));
 
   async function handleConfirm() {
     if (!service) return;
@@ -85,11 +109,11 @@ export default function BookingPage() {
     const start = dayjs(date).hour(h).minute(m).second(0);
     const end = start.add(service.durationMin, "minute");
 
-    const { user } = useAuth();
-    
+    const selfBooking = bookingFor === "self" && user?.role === "client";
+
     let client;
-    if (user && user.role === "client") {
-      client = clients.find(c => c.id === user.id);
+    if (selfBooking && user) {
+      client = clients.find((c) => c.id === user.id);
     }
 
     if (!client) {
@@ -364,6 +388,20 @@ export default function BookingPage() {
                         Horário
                       </Label>
                       <div className="grid grid-cols-3 gap-2 mt-2">
+                        {!user && (
+                          <div className="col-span-3 rounded-xl border border-border/70 bg-secondary/50 p-4 text-sm text-muted-foreground">
+                            Faça login para verificar se você já tem um horário antes de escolher um novo.
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Link to="/login" className="text-primary hover:underline">
+                                Entrar
+                              </Link>
+                              <span className="text-muted-foreground">ou</span>
+                              <Link to="/auth/register" className="text-primary hover:underline">
+                                criar conta
+                              </Link>
+                            </div>
+                          </div>
+                        )}
                         {availableTimes.length === 0 && (
                           <p className="col-span-3 text-sm text-muted-foreground py-6 text-center">
                             Sem horários nesse dia. Tente outra data.
@@ -372,10 +410,13 @@ export default function BookingPage() {
                         {availableTimes.map((t) => (
                           <button
                             key={t}
-                            onClick={() => setTime(t)}
+                            onClick={() => user && setTime(t)}
+                            disabled={!user}
                             className={cn(
                               "py-2.5 rounded-lg border text-sm transition-colors",
-                              time === t
+                              !user
+                                ? "border-border bg-muted/10 text-muted-foreground cursor-not-allowed"
+                                : time === t
                                 ? "bg-primary text-primary-foreground border-primary"
                                 : "border-border hover:border-primary/40 bg-card",
                             )}
@@ -395,51 +436,108 @@ export default function BookingPage() {
                   <p className="text-sm text-muted-foreground mt-1">
                     Para confirmarmos e enviarmos lembretes.
                   </p>
-                  <div className="grid md:grid-cols-2 gap-4 mt-8">
-                    <div className="space-y-2">
-                      <Label>Nome completo *</Label>
+                  {client ? (
+                    <div className="flex justify-center mt-6 mb-8">
+                      <div className="inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setBookingFor("self")}
+                          className={cn(
+                            "px-6 py-2 rounded-full text-sm font-medium transition-all",
+                            bookingFor === "self"
+                              ? "bg-primary text-primary-foreground shadow-md"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          Eu
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBookingFor("guest")}
+                          className={cn(
+                            "px-6 py-2 rounded-full text-sm font-medium transition-all",
+                            bookingFor === "guest"
+                              ? "bg-primary text-primary-foreground shadow-md"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          Convidado
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="grid md:grid-cols-2 gap-5 mt-10">
+                    <div className="space-y-2.5">
+                      <Label className="text-sm font-semibold">Nome completo *</Label>
                       <Input
                         value={contact.name}
                         onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                        disabled={bookingFor === "self" && !!client}
+                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
+                        placeholder="Seu nome completo"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Telefone *</Label>
+                    <div className="space-y-2.5">
+                      <Label className="text-sm font-semibold">Telefone *</Label>
                       <Input
                         value={contact.phone}
                         onChange={(e) => setContact({ ...contact, phone: e.target.value })}
                         placeholder="(11) 99999-0000"
+                        disabled={bookingFor === "self" && !!client}
+                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
                       />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label>Email</Label>
+                    <div className="space-y-2.5 md:col-span-2">
+                      <Label className="text-sm font-semibold">Email{bookingFor === "guest" ? " *" : ""}</Label>
                       <Input
                         type="email"
                         value={contact.email}
                         onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
+                        placeholder="seu@email.com"
                       />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label>Observações (opcional)</Label>
+                    <div className="space-y-2.5 md:col-span-2">
+                      <Label className="text-sm font-semibold">Observações (opcional)</Label>
                       <Textarea
                         rows={3}
                         value={contact.notes}
                         onChange={(e) => setContact({ ...contact, notes: e.target.value })}
+                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors resize-none"
                         placeholder="Algum detalhe importante para a profissional?"
                       />
                     </div>
                   </div>
-                  <div className="mt-8 rounded-xl bg-secondary/50 p-5 border border-border/60">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                      <Sparkles className="size-3.5 text-primary" />
-                      Resumo
+                  <div className="mt-10 pt-8 border-t border-border/40">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5 mb-4">
+                      <Sparkles className="size-4 text-primary" />
+                      Resumo do agendamento
                     </p>
-                    <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
-                      <Row label="Serviço" value={service?.name ?? ""} />
-                      <Row label="Profissional" value={professional?.name ?? ""} />
-                      <Row label="Data" value={fmtDate(date)} />
-                      <Row label="Horário" value={time} />
-                      <Row label="Total" value={brl(service?.price ?? 0)} />
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Serviço</p>
+                        <p className="font-semibold text-sm mt-2">{service?.name ?? "-"}</p>
+                      </div>
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Profissional</p>
+                        <p className="font-semibold text-sm mt-2">{professional?.name ?? "-"}</p>
+                      </div>
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor</p>
+                        <p className="font-semibold text-sm mt-2 text-primary">{brl(service?.price ?? 0)}</p>
+                      </div>
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Data</p>
+                        <p className="font-semibold text-sm mt-2">{fmtDate(date)}</p>
+                      </div>
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Horário</p>
+                        <p className="font-semibold text-sm mt-2">{time}</p>
+                      </div>
+                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Duração</p>
+                        <p className="font-semibold text-sm mt-2">{service?.durationMin ?? "-"} min</p>
+                      </div>
                     </div>
                   </div>
                 </div>

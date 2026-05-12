@@ -17,6 +17,7 @@ import { Route as AuthResetPasswordRouteImport } from './routes/_auth.reset-pass
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth.forgot-password'
+import { Route as MeusAgendamentosRouteImport } from './routes/meus-agendamentos'
 import { Route as AppServicosRouteImport } from './routes/_app.servicos'
 import { Route as AppRelatoriosRouteImport } from './routes/_app.relatorios'
 import { Route as AppProfissionaisRouteImport } from './routes/_app.profissionais'
@@ -66,6 +67,11 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
+} as any)
+const MeusAgendamentosRoute = MeusAgendamentosRouteImport.update({
+  id: '/meus-agendamentos',
+  path: '/meus-agendamentos',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppServicosRoute = AppServicosRouteImport.update({
   id: '/servicos',
@@ -199,6 +205,7 @@ export interface FileRouteTypes {
     | '/profissionais'
     | '/relatorios'
     | '/servicos'
+  | '/meus-agendamentos'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -218,6 +225,7 @@ export interface FileRouteTypes {
     | '/profissionais'
     | '/relatorios'
     | '/servicos'
+    | '/meus-agendamentos'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -250,6 +258,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   AgendarRoute: typeof AgendarRoute
+  MeusAgendamentosRoute: typeof MeusAgendamentosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -309,6 +318,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/meus-agendamentos': {
+      id: '/meus-agendamentos'
+      path: '/meus-agendamentos'
+      fullPath: '/meus-agendamentos'
+      preLoaderRoute: typeof MeusAgendamentosRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/servicos': {
       id: '/_app/servicos'
@@ -441,6 +457,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   AgendarRoute: AgendarRoute,
+  MeusAgendamentosRoute: MeusAgendamentosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
