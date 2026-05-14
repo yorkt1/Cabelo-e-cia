@@ -242,7 +242,7 @@ export default function HomePage() {
   }, [availableToday]);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#FFF5F7" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--background)" }}>
       <PublicHeader />
 
       {/* ===== HERO ===== */}
@@ -266,7 +266,7 @@ export default function HomePage() {
             </span>
             <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight mt-6 leading-[1.05]">
               Reserve seu momento de{" "}
-              <span className="bg-gradient-to-r from-primary via-rose-400 to-accent-foreground bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-orange-500 to-primary bg-clip-text text-transparent">
                 cuidado.
               </span>
             </h1>
@@ -277,7 +277,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
               <Link
                 to={user ? "/agendar" : "/login"}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3.5 rounded-xl font-medium transition-all shadow-[0_8px_30px_-12px_rgba(232,180,184,0.6)] hover:shadow-[0_12px_40px_-12px_rgba(232,180,184,0.8)]"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3.5 rounded-xl font-medium transition-all shadow-[0_8px_30px_-12px_rgba(226,74,58,0.6)] hover:shadow-[0_12px_40px_-12px_rgba(226,74,58,0.8)]"
               >
                 Agendar horário <ArrowRight className="size-4" />
               </Link>
@@ -318,7 +318,7 @@ export default function HomePage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            <Card className="p-6 border-border/60 shadow-[0_30px_80px_-30px_rgba(232,180,184,0.5)] bg-card/90 backdrop-blur">
+            <Card className="p-6 border-border/60 shadow-[0_30px_80px_-30px_rgba(226,74,58,0.5)] bg-card/90 backdrop-blur">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-primary font-medium">
@@ -580,7 +580,7 @@ export default function HomePage() {
               ) : (
                 <Link
                   to="/agendar"
-                  className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+                  className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
                 >
                   Continuar Agendamento <ArrowRight className="size-4" />
                 </Link>
@@ -591,7 +591,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== TRUST STRIP ===== */}
-      <section className="border-y border-border/60 bg-pink-50/30">
+      <section className="border-y border-border/60 bg-red-50/30">
         <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             { v: "+1.200", l: "salões ativos" },
@@ -636,7 +636,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== SERVICES SHOWCASE ===== */}
-      <section id="services" className="bg-pink-50/30 border-y border-border/60">
+      <section id="services" className="bg-red-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div className="max-w-xl">
@@ -659,7 +659,7 @@ export default function HomePage() {
             {services.map((s) => (
               <Card
                 key={s.id}
-                className="p-6 border-border/60 hover:border-primary/40 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-25px_rgba(232,180,184,0.5)] group"
+                className="p-6 border-border/60 hover:border-primary/40 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-25px_rgba(226,74,58,0.5)] group"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -729,7 +729,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FEATURES (for salon owners) ===== */}
-      <section id="features" className="bg-pink-50/30 border-y border-border/60">
+      <section id="features" className="bg-red-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -776,7 +776,7 @@ export default function HomePage() {
             <div className="flex md:justify-end gap-3">
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 bg-foreground text-background hover:bg-foreground/90 px-7 py-4 rounded-xl font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-4 rounded-xl font-medium transition-colors"
               >
                 Começar grátis <ArrowRight className="size-4" />
               </Link>
@@ -800,7 +800,7 @@ export default function HomePage() {
           {PLANS.map((p) => (
             <Card
               key={p.name}
-              className={`p-8 relative border-border/60 ${p.popular ? "border-primary shadow-[0_8px_30px_-12px_rgba(232,180,184,0.5)]" : ""}`}
+              className={`p-8 relative border-border/60 ${p.popular ? "border-primary shadow-[0_8px_30px_-12px_rgba(226,74,58,0.5)]" : ""}`}
             >
               {p.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[11px] font-medium px-3 py-1 rounded-full">
@@ -836,7 +836,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="bg-pink-50/30 border-y border-border/60">
+      <section className="bg-red-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -955,7 +955,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <Card className="p-8 border-border/60 bg-card/90 backdrop-blur shadow-[0_30px_80px_-30px_rgba(232,180,184,0.4)]">
+            <Card className="p-8 border-border/60 bg-card/90 backdrop-blur shadow-[0_30px_80px_-30px_rgba(226,74,58,0.4)]">
               <div className="flex items-center gap-2 text-primary">
                 <Heart className="size-5 fill-primary" />
                 <p className="text-xs uppercase tracking-wider font-medium">Reserve agora</p>
@@ -968,7 +968,7 @@ export default function HomePage() {
               </p>
               <Link
                 to="/agendar"
-                className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3.5 rounded-xl font-medium transition-all shadow-[0_8px_30px_-12px_rgba(232,180,184,0.6)]"
+                className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3.5 rounded-xl font-medium transition-all shadow-[0_8px_30px_-12px_rgba(226,74,58,0.6)]"
               >
                 Agendar agora <ArrowRight className="size-4" />
               </Link>

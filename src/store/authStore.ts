@@ -28,18 +28,19 @@ interface AuthState {
 
 export const useAuth = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       
       login: async (email, password) => {
         // Simulação de login para profissionais
-        if (email === "contato@belle.com" || email === "demo@belle.com") {
+        if (email === "contato@cabelos-cia.com" || email === "demo@cabelos-cia.com") {
+          const salon = useDb.getState().salon;
           set({ 
-            user: { id: "u1", name: "Guilherme (Dono)", email, role: "owner", salonId: "salon_demo" }, 
+            user: { id: "1", name: "Bruna Lima", email, role: "owner", salonId: salon?.id || "salon_demo" }, 
             isAuthenticated: true 
           });
-        } else if (email === "colaborador@belle.com") {
+        } else if (email === "colaborador@cabelos-cia.com") {
           set({ 
             user: { id: "u2", name: "Ana Silva", email, role: "professional", salonId: "salon_demo" }, 
             isAuthenticated: true 

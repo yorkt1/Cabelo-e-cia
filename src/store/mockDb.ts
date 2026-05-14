@@ -88,7 +88,7 @@ const SPECIALTIES = [
   "Massagem",
 ];
 const CATEGORIES = ["Cabelo", "Unhas", "Estética", "Sobrancelha"];
-const COLORS = ["#E8B4B8", "#D8A7B1", "#C9ADA7", "#B5838D", "#E5989B", "#F4A6A6"];
+const COLORS = ["#E24A3A", "#F97316", "#EA580C", "#991B1B", "#7C2D12", "#451A03"];
 
 function seed() {
   const salonId = "salon_demo";
@@ -475,6 +475,6 @@ export const useDb = create<DbState>()(
       updateSalon: (idv, sv) =>
         set((s) => ({ salons: s.salons.map((x) => (x.id === idv ? { ...x, ...sv } : x)) })),
     }),
-    { name: "belle-mock-db", version: 1 },
+    { name: "cabelos-cia-mock-db", version: 1 },
   ),
 );

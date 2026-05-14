@@ -10,6 +10,7 @@ export default function PublicHeader() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/logo_cia.png" alt="Cabelos e Cia" className="h-10 w-auto rounded-lg object-contain" />
+          <span className="font-display text-xl font-bold tracking-tight">Cabelos e Cia</span>
         </Link>
         <nav className="hidden md:flex items-center gap-8 text-sm">
           <a

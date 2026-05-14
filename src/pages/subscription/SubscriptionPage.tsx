@@ -59,7 +59,7 @@ export default function SubscriptionPage() {
               key={p.id}
               className={cn(
                 "border-border/60 relative",
-                active && "border-primary shadow-[0_8px_30px_-12px_rgba(232,180,184,0.45)]",
+                active && "border-primary shadow-[0_8px_30px_-12px_rgba(226,74,58,0.45)]",
               )}
             >
               {p.id === "pro" && (

@@ -12,7 +12,7 @@ interface Props {
 
 export default function StatCard({ label, value, delta, icon: Icon, trend }: Props) {
   return (
-    <Card className="border-border/60 hover:shadow-[0_8px_30px_-12px_rgba(232,180,184,0.4)] transition-shadow">
+    <Card className="border-border/60 hover:shadow-[0_8px_30px_-12px_rgba(226,74,58,0.4)] transition-shadow">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
@@ -24,7 +24,7 @@ export default function StatCard({ label, value, delta, icon: Icon, trend }: Pro
               <p
                 className={cn(
                   "text-xs font-medium",
-                  trend === "up" ? "text-emerald-600" : "text-rose-600",
+                  trend === "up" ? "text-emerald-600" : "text-orange-600",
                 )}
               >
                 {delta}

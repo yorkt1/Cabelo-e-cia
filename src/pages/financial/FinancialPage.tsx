@@ -58,7 +58,7 @@ export default function FinancialPage() {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`size-9 rounded-xl flex items-center justify-center ${t.type === "income" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}
+                  className={`size-9 rounded-xl flex items-center justify-center ${t.type === "income" ? "bg-emerald-100 text-emerald-700" : "bg-orange-100 text-orange-700"}`}
                 >
                   {t.type === "income" ? (
                     <TrendingUp className="size-4" />
@@ -77,7 +77,7 @@ export default function FinancialPage() {
                 </div>
               </div>
               <span
-                className={`font-semibold ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
+                className={`font-semibold ${t.type === "income" ? "text-emerald-600" : "text-orange-600"}`}
               >
                 {t.type === "income" ? "+" : "−"} {brl(t.amount)}
               </span>

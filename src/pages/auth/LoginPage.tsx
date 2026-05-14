@@ -175,7 +175,7 @@ export default function LoginPage() {
                   variant="outline"
                   size="sm"
                   className="text-xs h-12 flex flex-col gap-0.5"
-                  onClick={() => onProfessionalSubmit({ email: "contato@belle.com", password: "password" })}
+                  onClick={() => onProfessionalSubmit({ email: "contato@cabelos-cia.com", password: "password" })}
                 >
                   <span className="font-bold">Dono</span>
                   <span className="text-[10px] opacity-60">Visão completa</span>
@@ -184,7 +184,7 @@ export default function LoginPage() {
                   variant="outline"
                   size="sm"
                   className="text-xs h-12 flex flex-col gap-0.5"
-                  onClick={() => onProfessionalSubmit({ email: "colaborador@belle.com", password: "password" })}
+                  onClick={() => onProfessionalSubmit({ email: "colaborador@cabelos-cia.com", password: "password" })}
                 >
                   <span className="font-bold">Colaborador</span>
                   <span className="text-[10px] opacity-60">Visão restrita</span>

@@ -22,6 +22,6 @@ export const useUi = create<UiState>()(
         }),
       setSidebar: (v) => set({ sidebarCollapsed: v }),
     }),
-    { name: "belle-ui" },
+    { name: "cabelos-cia-ui" },
   ),
 );
