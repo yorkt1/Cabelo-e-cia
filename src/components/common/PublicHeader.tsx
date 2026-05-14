@@ -6,7 +6,7 @@ export default function PublicHeader() {
   const firstName = user?.name?.split(" ")[0] ?? ""
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-white/10 backdrop-blur-lg">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/logo_cia.png" alt="Cabelos e Cia" className="h-10 w-auto rounded-lg object-contain" />

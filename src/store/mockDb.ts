@@ -21,6 +21,7 @@ export interface Professional {
   email: string;
   phone?: string;
   avatar?: string;
+  coverImage?: string;
   specialties: string[];
   commission: number;
   color: string;
@@ -120,12 +121,30 @@ function seed() {
     },
   ];
 
+  const proAvatars = [
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop"
+  ];
+
+  const proCovers = [
+    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1620331311520-246422fd82f9?q=80&w=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=600&auto=format&fit=crop"
+  ];
+
   const professionals: Professional[] = Array.from({ length: 5 }).map((_, i) => ({
     id: `pro_${i + 1}`,
     salonId,
     name: ["Camila Souza", "Bruna Lima", "Marina Alves", "Helena Castro", "Júlia Rocha"][i],
     email: "leandroleandri36@gmail.com",
     phone: "55519987569",
+    avatar: proAvatars[i],
+    coverImage: proCovers[i],
     specialties: [SPECIALTIES[i % SPECIALTIES.length], SPECIALTIES[(i + 2) % SPECIALTIES.length]],
     commission: 30 + i * 5,
     color: COLORS[i % COLORS.length],

@@ -31,6 +31,7 @@ import { useAuth } from "@/store/authStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const FEATURES = [
   {
@@ -242,15 +243,16 @@ export default function HomePage() {
   }, [availableToday]);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--background)" }}>
+    <div className="min-h-screen flex flex-col bg-transparent">
       <PublicHeader />
 
       {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden pt-24 pb-32">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-10 left-1/4 size-[600px] rounded-full bg-primary/15 blur-3xl" />
-          <div className="absolute top-40 right-0 size-[500px] rounded-full bg-accent/40 blur-3xl" />
-          <div className="absolute bottom-0 left-0 size-[400px] rounded-full bg-secondary/60 blur-3xl" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+          <div className="absolute top-20 left-1/4 size-[600px] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+          <div className="absolute top-40 right-0 size-[500px] rounded-full bg-accent/20 blur-[100px]" />
+          <div className="absolute -bottom-20 left-1/3 size-[400px] rounded-full bg-secondary/30 blur-[80px]" />
         </div>
 
         <div className="max-w-6xl mx-auto px-6 pt-16 pb-20 grid lg:grid-cols-2 gap-12 items-start">
@@ -264,15 +266,20 @@ export default function HomePage() {
               <Sparkles className="size-3.5 text-primary" />
               Agendamento online em 30 segundos
             </span>
-            <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight mt-6 leading-[1.05]">
-              Reserve seu momento de{" "}
-              <span className="bg-gradient-to-r from-primary via-orange-500 to-primary bg-clip-text text-transparent">
-                cuidado.
+            <h1 className="font-display text-5xl sm:text-7xl font-semibold tracking-tight mt-6 leading-[0.95]">
+              Realce sua{" "}
+              <span className="relative">
+                <span className="relative z-10 bg-gradient-to-r from-primary via-orange-600 to-primary bg-clip-text text-transparent">
+                  beleza
+                </span>
+                <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/20 -z-0" viewBox="0 0 200 20" fill="none" preserveAspectRatio="none">
+                  <path d="M0 15C50 5 150 5 200 15" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
+                </svg>
               </span>
+              {" "}essencial.
             </h1>
-            <p className="text-lg text-muted-foreground mt-5 max-w-xl">
-              Escolha o serviço, o horário e a profissional. Sem ligação, sem espera — sua agenda em
-              poucos toques.
+            <p className="text-xl text-muted-foreground mt-8 max-w-xl leading-relaxed">
+              O agendamento que entende sua rotina. Escolha sua profissional favorita e reserve seu momento de autocuidado em segundos.
             </p>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
               <Link
@@ -447,7 +454,7 @@ export default function HomePage() {
                         }}
                         className="overflow-hidden"
                       >
-                        <div className="rounded-2xl border border-border/60 bg-background p-4 mt-3 hover:border-primary/40 transition-colors shadow-sm">
+                        <div className="rounded-2xl border border-border/60 bg-background/50 p-4 mt-3 hover:border-primary/40 transition-colors shadow-sm">
                           <div className="flex items-center justify-between gap-4">
                             <div>
                               <p className="text-sm font-semibold">{item.professional.name}</p>
@@ -591,17 +598,20 @@ export default function HomePage() {
       </section>
 
       {/* ===== TRUST STRIP ===== */}
-      <section className="border-y border-border/60 bg-red-50/30">
-        <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <section className="border-y border-border/40 bg-white/40 backdrop-blur-sm relative z-10">
+        <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { v: "+1.200", l: "salões ativos" },
-            { v: "98%", l: "satisfação" },
-            { v: "−70%", l: "no-show" },
-            { v: "4.9", l: "★ avaliação" },
+            { v: "+1.200", l: "clientes ativos", icon: Heart },
+            { v: "98%", l: "satisfação", icon: Star },
+            { v: "−70%", l: "faltas", icon: Clock },
+            { v: "4.9", l: "avaliação média", icon: Sparkles },
           ].map((s) => (
-            <div key={s.l}>
-              <p className="font-display text-3xl font-semibold">{s.v}</p>
-              <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{s.l}</p>
+            <div key={s.l} className="flex flex-col items-center">
+              <div className="size-10 rounded-full bg-primary/5 flex items-center justify-center mb-3">
+                <s.icon className="size-5 text-primary/70" />
+              </div>
+              <p className="font-display text-3xl font-bold text-foreground">{s.v}</p>
+              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-[0.2em] font-semibold">{s.l}</p>
             </div>
           ))}
         </div>
@@ -617,26 +627,26 @@ export default function HomePage() {
             Três passos. Zero complicação.
           </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-5 mt-14 relative">
+        <div className="grid md:grid-cols-3 gap-6 mt-16 relative">
           {STEPS.map((s, i) => (
-            <Card key={s.n} className="p-8 border-border/60 relative overflow-hidden">
-              <span className="font-display text-7xl font-semibold text-primary/15 absolute -top-2 -right-2 select-none">
+            <Card key={s.n} className="p-8 border-border/40 bg-white/60 backdrop-blur-md relative overflow-hidden group hover:border-primary/30 transition-all hover:-translate-y-1 shadow-sm hover:shadow-xl">
+              <span className="font-display text-8xl font-bold text-primary/5 absolute -top-4 -right-4 select-none group-hover:text-primary/10 transition-colors">
                 {s.n}
               </span>
-              <div className="size-11 rounded-xl bg-primary/15 flex items-center justify-center mb-5">
-                {i === 0 && <Scissors className="size-5 text-primary" strokeWidth={1.75} />}
-                {i === 1 && <Calendar className="size-5 text-primary" strokeWidth={1.75} />}
-                {i === 2 && <MessageSquare className="size-5 text-primary" strokeWidth={1.75} />}
+              <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                {i === 0 && <Scissors className="size-6 text-primary" strokeWidth={1.5} />}
+                {i === 1 && <Calendar className="size-6 text-primary" strokeWidth={1.5} />}
+                {i === 2 && <MessageSquare className="size-6 text-primary" strokeWidth={1.5} />}
               </div>
-              <p className="font-display text-xl font-semibold">{s.title}</p>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{s.desc}</p>
+              <p className="font-display text-2xl font-semibold">{s.title}</p>
+              <p className="text-muted-foreground mt-3 leading-relaxed text-sm">{s.desc}</p>
             </Card>
           ))}
         </div>
       </section>
 
       {/* ===== SERVICES SHOWCASE ===== */}
-      <section id="services" className="bg-red-50/30 border-y border-border/60">
+      <section id="services" className="bg-primary/5 border-y border-border/40 backdrop-blur-[2px]">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div className="max-w-xl">
@@ -655,34 +665,52 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-14">
-            {services.map((s) => (
-              <Card
-                key={s.id}
-                className="p-6 border-border/60 hover:border-primary/40 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-25px_rgba(226,74,58,0.5)] group"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
-                      {s.category}
-                    </span>
-                    <p className="font-display text-xl font-semibold mt-3">{s.name}</p>
-                    <p className="text-xs text-muted-foreground mt-1 inline-flex items-center gap-1">
-                      <Clock className="size-3" /> {s.durationMin} min
-                    </p>
-                  </div>
-                  <p className="font-display text-2xl font-semibold text-primary shrink-0">
-                    {brl(s.price)}
-                  </p>
-                </div>
-                <Link
-                  to="/agendar"
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-foreground/70 group-hover:text-primary transition-colors"
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-14">
+            {services.map((s, i) => {
+              const serviceImages = [
+                "https://images.unsplash.com/photo-1560869713-7d0a29430863?q=80&w=400&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=400&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=400&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=400&auto=format&fit=crop"
+              ];
+              return (
+                <Card
+                  key={s.id}
+                  className="overflow-hidden border-border/40 hover:border-primary/40 transition-all hover:-translate-y-1 hover:shadow-2xl group flex flex-col h-full bg-white/70 backdrop-blur-md"
                 >
-                  Agendar <ArrowRight className="size-3.5" />
-                </Link>
-              </Card>
-            ))}
+                  <div className="h-40 overflow-hidden relative">
+                    <img 
+                      src={serviceImages[i % serviceImages.length]} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      alt={s.name} 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="text-[10px] px-2 py-1 rounded-full bg-primary/90 text-white font-bold uppercase tracking-wider">
+                        {s.category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-display text-xl font-bold group-hover:text-primary transition-colors">{s.name}</p>
+                      <p className="font-display text-xl font-bold text-primary">{brl(s.price)}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 inline-flex items-center gap-1.5">
+                      <Clock className="size-3.5" /> {s.durationMin} min de atendimento
+                    </p>
+                    <div className="mt-auto pt-6">
+                      <Link
+                        to="/agendar"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/50 text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all text-sm font-semibold"
+                      >
+                        Agendar agora <ArrowRight className="size-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -704,24 +732,38 @@ export default function HomePage() {
           {professionals.map((p) => (
             <Card
               key={p.id}
-              className="p-6 border-border/60 text-center group hover:border-primary/40 transition-colors"
+              className="border-border/60 text-center group hover:border-primary/40 transition-all overflow-hidden flex flex-col items-center"
             >
-              <div
-                className="size-20 mx-auto rounded-full flex items-center justify-center font-display text-2xl font-semibold text-primary-foreground"
-                style={{ background: p.color }}
-              >
-                {p.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .slice(0, 2)}
+              {/* Cover Image */}
+              <div className="w-full h-24 relative overflow-hidden">
+                {p.coverImage && (
+                  <img 
+                    src={p.coverImage} 
+                    className="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700"
+                    alt=""
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-card" />
               </div>
-              <p className="font-display text-lg font-semibold mt-4">{p.name}</p>
-              <p className="text-xs text-muted-foreground mt-1">{p.specialties.join(" · ")}</p>
-              <div className="flex justify-center gap-0.5 mt-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="size-3 fill-primary text-primary" />
-                ))}
+
+              <div className="px-6 pb-8 -mt-10 relative z-10 flex flex-col items-center w-full">
+                <Avatar className="size-20 border-4 border-background shadow-xl">
+                  <AvatarImage src={p.avatar} className="object-cover" />
+                  <AvatarFallback className="text-white text-xl" style={{ background: p.color }}>
+                    {p.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <h3 className="font-display text-lg font-semibold mt-4">{p.name}</h3>
+                <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider font-medium">
+                  {p.specialties.slice(0, 2).join(" · ")}
+                </p>
+
+                <div className="flex justify-center gap-0.5 mt-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="size-3 fill-primary text-primary" />
+                  ))}
+                </div>
               </div>
             </Card>
           ))}
@@ -729,7 +771,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FEATURES (for salon owners) ===== */}
-      <section id="features" className="bg-red-50/30 border-y border-border/60">
+      <section id="features" className="bg-primary/5 border-y border-border/40 backdrop-blur-[2px]">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -743,17 +785,17 @@ export default function HomePage() {
               feito.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-14">
             {FEATURES.map((f) => (
               <Card
                 key={f.title}
-                className="p-7 border-border/60 hover:border-primary/40 transition-colors group"
+                className="p-8 border-border/40 bg-white/60 backdrop-blur-md hover:border-primary/40 transition-all hover:-translate-y-1 hover:shadow-xl group"
               >
-                <div className="size-11 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
-                  <f.icon className="size-5 text-primary" strokeWidth={1.75} />
+                <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                  <f.icon className="size-6 text-primary group-hover:text-white transition-colors" strokeWidth={1.5} />
                 </div>
-                <p className="font-display text-xl font-semibold mt-5">{f.title}</p>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.desc}</p>
+                <p className="font-display text-2xl font-semibold mt-6">{f.title}</p>
+                <p className="text-muted-foreground mt-3 leading-relaxed text-sm">{f.desc}</p>
               </Card>
             ))}
           </div>
@@ -762,23 +804,25 @@ export default function HomePage() {
 
       {/* ===== CTA banner ===== */}
       <section className="max-w-6xl mx-auto px-6 pt-24">
-        <div className="rounded-3xl bg-gradient-to-br from-primary/30 via-accent/30 to-secondary p-10 md:p-16 relative overflow-hidden">
-          <div className="absolute -top-20 -right-20 size-80 rounded-full bg-primary/30 blur-3xl" />
-          <div className="relative grid md:grid-cols-2 gap-8 items-center">
+        <div className="rounded-[2.5rem] bg-gradient-to-br from-primary/80 via-primary to-orange-600 p-12 md:p-20 relative overflow-hidden shadow-2xl shadow-primary/20">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-white/10 -skew-x-12 translate-x-1/2" />
+          <div className="absolute -top-24 -left-24 size-96 rounded-full bg-white/10 blur-3xl" />
+          
+          <div className="relative grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
-                Sua próxima cliente está procurando agora.
+              <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]">
+                Sua próxima cliente está a um clique.
               </h2>
-              <p className="text-foreground/70 mt-4">
-                Coloque seu salão online em minutos. Sem mensalidade no primeiro mês.
+              <p className="text-white/80 mt-6 text-lg">
+                Transforme seu salão com a tecnologia que o mercado exige. Teste grátis hoje.
               </p>
             </div>
-            <div className="flex md:justify-end gap-3">
+            <div className="flex md:justify-end">
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-4 rounded-xl font-medium transition-colors"
+                className="inline-flex items-center gap-3 bg-white text-primary hover:bg-white/90 px-10 py-5 rounded-2xl font-bold transition-all hover:scale-105 shadow-xl"
               >
-                Começar grátis <ArrowRight className="size-4" />
+                Começar grátis agora <ArrowRight className="size-5" />
               </Link>
             </div>
           </div>
@@ -836,7 +880,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="bg-red-50/30 border-y border-border/60">
+      <section className="bg-primary/5 border-y border-border/40 backdrop-blur-[2px]">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -901,7 +945,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== CONTACT / VISIT ===== */}
-      <section id="contact" className="bg-gradient-to-b from-transparent to-card/60">
+      <section id="contact" className="bg-gradient-to-b from-transparent to-primary/5 backdrop-blur-[2px]">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>

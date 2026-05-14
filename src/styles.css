@@ -54,52 +54,52 @@
   --radius: 0.875rem;
 
   /* Warm red palette — based on C& logo (#E24A3A) */
-  --background: oklch(0.99 0.005 27);
-  --foreground: oklch(0.22 0.03 27);
+  --background: #fffcfb;
+  --foreground: #2d1614;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 30);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 30);
+  --card: #ffffff;
+  --card-foreground: #2d1614;
+  --popover: #ffffff;
+  --popover-foreground: #2d1614;
 
   /* Bold warm red (logo color) */
-  --primary: oklch(0.56 0.19 27);
-  --primary-foreground: oklch(0.99 0.002 27);
+  --primary: #E24A3A;
+  --primary-foreground: #ffffff;
 
   /* Warm sand */
-  --secondary: oklch(0.95 0.02 27);
-  --secondary-foreground: oklch(0.35 0.06 27);
+  --secondary: #fdf2f0;
+  --secondary-foreground: #E24A3A;
 
-  --muted: oklch(0.96 0.008 45);
-  --muted-foreground: oklch(0.48 0.03 30);
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
 
-  --accent: oklch(0.92 0.03 27);
-  --accent-foreground: oklch(0.35 0.06 27);
+  --accent: #fdf2f0;
+  --accent-foreground: #E24A3A;
 
-  --destructive: oklch(0.50 0.22 27);
-  --destructive-foreground: oklch(0.99 0.002 27);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
 
-  --border: oklch(0.92 0.008 45);
-  --input: oklch(0.93 0.008 45);
-  --ring: oklch(0.56 0.19 27);
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #E24A3A;
 
-  --chart-1: oklch(0.56 0.19 27);
-  --chart-2: oklch(0.72 0.10 55);
-  --chart-3: oklch(0.62 0.12 40);
-  --chart-4: oklch(0.80 0.06 80);
-  --chart-5: oklch(0.65 0.08 50);
+  --chart-1: #E24A3A;
+  --chart-2: #f97316;
+  --chart-3: #fbbf24;
+  --chart-4: #4ade80;
+  --chart-5: #2dd4bf;
 
-  --sidebar: oklch(0.98 0.006 50);
-  --sidebar-foreground: oklch(0.25 0.03 30);
-  --sidebar-primary: oklch(0.56 0.19 27);
-  --sidebar-primary-foreground: oklch(0.99 0.002 27);
-  --sidebar-accent: oklch(0.94 0.015 50);
-  --sidebar-accent-foreground: oklch(0.25 0.03 30);
-  --sidebar-border: oklch(0.92 0.008 45);
-  --sidebar-ring: oklch(0.56 0.19 27);
+  --sidebar: #fafafa;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #E24A3A;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #E24A3A;
 
-  --gradient-soft: linear-gradient(135deg, oklch(0.93 0.03 30), oklch(0.95 0.02 55));
-  --shadow-soft: 0 8px 30px -12px oklch(0.56 0.19 27 / 0.25);
+  --gradient-soft: linear-gradient(135deg, #fdf2f0, #ffffff);
+  --shadow-soft: 0 8px 30px -12px rgba(226, 74, 58, 0.25);
 }
 
 /* Efeito de brilho intenso para horários livres (Rosa Vibrante) */
@@ -179,10 +179,10 @@
 
 /* Estilo para "Meu" agendamento - Vermelho para manter a identidade */
 .my-slot {
-  background-color: oklch(0.94 0.03 27); /* Soft red tint */
-  border-color: oklch(0.56 0.19 27); /* Primary red */
-  color: oklch(0.40 0.12 27); /* Darker red for text */
-  box-shadow: inset 0 2px 4px oklch(0.56 0.19 27 / 0.1);
+  background-color: #fdf2f0; /* Soft red tint */
+  border-color: #E24A3A; /* Primary red */
+  color: #8a241a; /* Darker red for text */
+  box-shadow: inset 0 2px 4px rgba(226, 74, 58, 0.1);
 }
 
 .dark {
@@ -215,6 +215,10 @@
   --sidebar-ring: oklch(0.60 0.18 27);
 }
 
+.dark body::before {
+  opacity: 0.04;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -222,10 +226,32 @@
   html, body {
     font-family: var(--font-sans);
   }
-  body {
+  html {
     background-color: var(--color-background);
-    color: var(--color-foreground);
   }
+  body {
+    background-color: transparent;
+    color: var(--color-foreground);
+    position: relative;
+    min-height: 100vh;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08; /* Opacidade aumentada para melhor visibilidade */
+    z-index: -1;
+    pointer-events: none;
+  }
+
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.01em;

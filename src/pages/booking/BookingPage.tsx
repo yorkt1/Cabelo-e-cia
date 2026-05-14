@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ArrowLeft, ArrowRight, Calendar as CalIcon, Clock, Sparkles, Settings, XCircle, CalendarDays } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Calendar as CalIcon, Clock, Sparkles, Settings, XCircle, CalendarDays, Star } from "lucide-react";
 import PublicHeader from "@/components/common/PublicHeader";
 import PublicFooter from "@/components/common/PublicFooter";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDb } from "@/store/mockDb";
 import { useAuth } from "@/store/authStore";
 import { brl, dayjs, fmtDate, initials } from "@/utils/format";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl, supabaseAnonKey } from "@/utils/supabaseConfig";
@@ -356,19 +356,19 @@ export default function BookingPage() {
                 Agendar novo horário
               </button>
               <div className="relative group">
-                <div className="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-bounce z-10">
+                <div className="absolute -top-3 -right-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-bounce z-10">
                   - R$ 5,00
                 </div>
-                <button
-                  onClick={() => {
-                    toast.info("Copiado para o clipboard!", {
-                      description: "00020126580014BR.GOV.BCB.PIX...",
-                    });
-                  }}
-                  className="px-5 py-3 rounded-xl bg-[#00bdae] text-white hover:bg-[#00bdae]/90 text-sm font-medium flex items-center justify-center gap-2 shadow-lg shadow-[#00bdae]/20"
-                >
-                  Pagar {brl((service?.price ?? 0) - 5)} no Pix <Check className="size-4" />
-                </button>
+                  <button
+                    onClick={() => {
+                      toast.info("Copiado para o clipboard!", {
+                        description: "00020126580014BR.GOV.BCB.PIX...",
+                      });
+                    }}
+                    className="px-5 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                  >
+                    Pagar {brl((service?.price ?? 0) - 5)} no Pix <Check className="size-4" />
+                  </button>
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-4">
@@ -483,21 +483,52 @@ export default function BookingPage() {
                           key={p.id}
                           onClick={() => setProfessionalId(p.id)}
                           className={cn(
-                            "rounded-xl border p-5 transition-all flex flex-col items-center text-center",
+                            "rounded-xl border transition-all flex flex-col items-center text-center overflow-hidden group relative",
                             active
                               ? "border-primary bg-primary/5"
                               : "border-border hover:border-primary/40 bg-card",
                           )}
                         >
-                          <Avatar className="size-14">
-                            <AvatarFallback className="text-white" style={{ background: p.color }}>
-                              {initials(p.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <p className="font-medium mt-3">{p.name}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {p.specialties.slice(0, 2).join(" · ")}
-                          </p>
+                          {/* Background/Cover Image */}
+                          <div className="w-full h-24 relative overflow-hidden">
+                            {p.coverImage && (
+                              <img 
+                                src={p.coverImage} 
+                                className="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700"
+                                alt=""
+                              />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-card" />
+                          </div>
+
+                          <div className="px-5 pb-6 -mt-10 relative z-10 flex flex-col items-center w-full">
+                            <Avatar className="size-20 border-4 border-background shadow-xl">
+                              <AvatarImage src={p.avatar} className="object-cover" />
+                              <AvatarFallback className="text-white text-xl" style={{ background: p.color }}>
+                                {initials(p.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            
+                            <h3 className="font-display text-lg font-semibold mt-4 text-foreground">
+                              {p.name}
+                            </h3>
+                            
+                            <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider font-medium">
+                              {p.specialties.slice(0, 2).join(" · ")}
+                            </p>
+
+                            <div className="flex gap-0.5 mt-3">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star key={i} className="size-3 text-primary fill-primary" />
+                              ))}
+                            </div>
+                          </div>
+
+                          {active && (
+                            <div className="absolute top-3 right-3 size-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
+                              <Check className="size-3.5" strokeWidth={3} />
+                            </div>
+                          )}
                         </button>
                       );
                     })}
@@ -534,7 +565,7 @@ export default function BookingPage() {
                       </p>
 
                       {(service || professional) && (
-                        <div className="mt-8 p-5 rounded-2xl border border-border/60 bg-secondary/10">
+                        <div className="mt-8 p-5 rounded-2xl border border-border/40 bg-primary/5">
                           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">
                             Sua escolha
                           </p>
@@ -625,7 +656,7 @@ export default function BookingPage() {
                         )}
                         <div className="col-span-3 flex flex-wrap gap-4 mb-4 px-1">
                           <div className="flex items-center gap-2">
-                            <div className="size-3 rounded-full border border-primary available-glow shadow-sm" />
+                            <div className="size-3 rounded-full border-2 border-primary shadow-sm" />
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Livre</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -681,8 +712,8 @@ export default function BookingPage() {
                                   ? "occupied-pattern border-muted/30 text-muted-foreground/30 cursor-not-allowed"
                                   : time === t
                                   ? "bg-primary text-primary-foreground border-primary shadow-lg scale-105 z-10 font-bold"
-                                  : "border-primary/20 hover:border-primary/60 bg-white text-primary",
-                                state === "available" && time !== t && !reschedulingFrom && "available-glow",
+                                  : "border-primary/40 hover:border-primary bg-white text-primary font-semibold",
+                                state === "available" && time !== t && !reschedulingFrom && "hover:bg-primary/5",
                                 state === "available" && time !== t && reschedulingFrom && "reschedule-beam"
                               )}
                             >
@@ -754,7 +785,7 @@ export default function BookingPage() {
                         value={contact.name}
                         onChange={(e) => setContact({ ...contact, name: e.target.value })}
                         disabled={bookingFor === "self" && !!client}
-                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
+                        className="rounded-xl bg-white border-border/60 focus-visible:bg-white transition-colors h-11"
                         placeholder="Seu nome completo"
                       />
                     </div>
@@ -765,7 +796,7 @@ export default function BookingPage() {
                         onChange={(e) => setContact({ ...contact, phone: e.target.value })}
                         placeholder="(11) 99999-0000"
                         disabled={bookingFor === "self" && !!client}
-                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
+                        className="rounded-xl bg-white border-border/60 focus-visible:bg-white transition-colors h-11"
                       />
                     </div>
                     <div className="space-y-2.5 md:col-span-2">
@@ -774,7 +805,7 @@ export default function BookingPage() {
                         type="email"
                         value={contact.email}
                         onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors h-11"
+                        className="rounded-xl bg-white border-border/60 focus-visible:bg-white transition-colors h-11"
                         placeholder="seu@email.com"
                       />
                     </div>
@@ -784,7 +815,7 @@ export default function BookingPage() {
                         rows={2}
                         value={contact.notes}
                         onChange={(e) => setContact({ ...contact, notes: e.target.value })}
-                        className="rounded-xl bg-secondary/50 border-border/60 focus-visible:bg-background transition-colors resize-none"
+                        className="rounded-xl bg-white border-border/60 focus-visible:bg-white transition-colors resize-none"
                         placeholder="Algum detalhe importante para a profissional?"
                       />
                     </div>
@@ -800,7 +831,7 @@ export default function BookingPage() {
                               "py-3 px-2 rounded-xl border text-sm font-medium transition-all flex items-center justify-center",
                               paymentMethod === method
                                 ? "bg-primary/10 border-primary text-primary shadow-sm"
-                                : "border-border/60 hover:border-primary/40 bg-secondary/20 text-muted-foreground"
+                                : "border-border/60 hover:border-primary/40 bg-white text-muted-foreground"
                             )}
                           >
                             {method}
@@ -815,27 +846,27 @@ export default function BookingPage() {
                       Resumo do agendamento
                     </p>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Serviço</p>
                         <p className="font-semibold text-sm mt-2">{service?.name ?? "-"}</p>
                       </div>
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Profissional</p>
                         <p className="font-semibold text-sm mt-2">{professional?.name ?? "-"}</p>
                       </div>
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor</p>
                         <p className="font-semibold text-sm mt-2 text-primary">{brl(service?.price ?? 0)}</p>
                       </div>
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Data</p>
                         <p className="font-semibold text-sm mt-2">{fmtDate(date)}</p>
                       </div>
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Horário</p>
                         <p className="font-semibold text-sm mt-2">{time}</p>
                       </div>
-                      <div className="rounded-xl bg-secondary/30 border border-border/40 p-4">
+                      <div className="rounded-xl bg-primary/5 border border-border/40 p-4">
                         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Duração</p>
                         <p className="font-semibold text-sm mt-2">{service?.durationMin ?? "-"} min</p>
                       </div>

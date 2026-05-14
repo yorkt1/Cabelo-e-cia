@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 export default function PublicFooter() {
   return (
-    <footer className="border-t border-border/60 bg-background mt-24">
+    <footer className="border-t border-border/40 bg-transparent mt-24">
       <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div className="col-span-2">
           <div className="flex items-center gap-2.5">
