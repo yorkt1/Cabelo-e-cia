@@ -5,7 +5,7 @@ export const Route = createFileRoute("/meus-agendamentos")({
   component: MyAppointments,
   head: () => ({
     meta: [
-      { title: "Meus Agendamentos — Belle" },
+      { title: "Meus Agendamentos — Cabelos e Cia" },
       {
         name: "description",
         content: "Consulte seus horários agendados e histórico de atendimentos.",

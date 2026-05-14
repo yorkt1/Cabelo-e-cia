@@ -73,13 +73,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Belle — Agenda Profissional" },
+      { title: "Cabelos e Cia — Agenda Profissional" },
       {
         name: "description",
         content: "Sistema de agendamento para salões, barbearias e estética.",
       },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Belle — Agenda Profissional" },
+      { property: "og:title", content: "Cabelos e Cia — Agenda Profissional" },
       {
         property: "og:description",
         content: "Sistema de agendamento para salões, barbearias e estética.",

@@ -19,6 +19,7 @@ export interface Professional {
   salonId: string;
   name: string;
   email: string;
+  phone?: string;
   avatar?: string;
   specialties: string[];
   commission: number;
@@ -94,7 +95,7 @@ function seed() {
   const salons: Salon[] = [
     {
       id: salonId,
-      name: "Studio Belle",
+      name: "Cabelos e Cia",
       logo: "",
       phone: "(11) 99999-0000",
       address: "Rua das Flores, 123",
@@ -123,7 +124,8 @@ function seed() {
     id: `pro_${i + 1}`,
     salonId,
     name: ["Camila Souza", "Bruna Lima", "Marina Alves", "Helena Castro", "Júlia Rocha"][i],
-    email: `pro${i + 1}@belle.com`,
+    email: "leandroleandri36@gmail.com",
+    phone: "55519987569",
     specialties: [SPECIALTIES[i % SPECIALTIES.length], SPECIALTIES[(i + 2) % SPECIALTIES.length]],
     commission: 30 + i * 5,
     color: COLORS[i % COLORS.length],

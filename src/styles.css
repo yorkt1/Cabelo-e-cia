@@ -102,6 +102,89 @@
   --shadow-soft: 0 8px 30px -12px oklch(0.78 0.08 20 / 0.25);
 }
 
+/* Efeito de brilho intenso para horários livres (Rosa Vibrante) */
+@keyframes intense-glow {
+  0%, 100% { 
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.3), inset 0 0 2px hsl(var(--primary) / 0.1); 
+    border-color: hsl(var(--primary) / 0.4); 
+    background-color: hsl(var(--primary) / 0.03);
+  }
+  50% { 
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.6), inset 0 0 10px hsl(var(--primary) / 0.2); 
+    border-color: hsl(var(--primary) / 1); 
+    background-color: hsl(var(--primary) / 0.1);
+  }
+}
+
+.available-glow {
+  animation: intense-glow 2.5s ease-in-out infinite;
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+/* Efeito Border Beam (Luz girando na borda) para o Reagendamento */
+@keyframes rotate-gradient {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.reschedule-beam {
+  position: relative;
+  z-index: 0;
+  border-color: transparent !important;
+}
+
+.reschedule-beam::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  z-index: -1;
+  background: conic-gradient(from var(--angle), transparent 70%, hsl(var(--primary)) 100%);
+  animation: rotate-gradient 1.5s linear infinite;
+  border-radius: inherit;
+}
+
+.reschedule-beam::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: white;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.dark .reschedule-beam::after {
+  background: hsl(var(--card));
+}
+
+/* Padrão para horários ocupados por outros */
+.occupied-pattern {
+  background-color: oklch(0.97 0.01 20 / 0.5); /* Very light pink-gray */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    oklch(0.78 0.08 20 / 0.05) 10px,
+    oklch(0.78 0.08 20 / 0.05) 20px
+  );
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+/* Estilo para "Meu" agendamento - Rosa para manter a identidade */
+.my-slot {
+  background-color: oklch(0.94 0.03 20); /* Soft pink */
+  border-color: oklch(0.78 0.08 20); /* Primary pink */
+  color: oklch(0.45 0.08 20); /* Darker pink for text */
+  box-shadow: inset 0 2px 4px oklch(0.78 0.08 20 / 0.1);
+}
+
 .dark {
   --background: oklch(0.22 0.02 25);
   --foreground: oklch(0.96 0.01 40);

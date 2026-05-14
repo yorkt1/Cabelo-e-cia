@@ -9,10 +9,7 @@ export default function PublicHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-display font-semibold text-sm">
-            B
-          </div>
-          <span className="font-display text-xl font-semibold tracking-tight">Belle</span>
+          <img src="/logo_cia.png" alt="Cabelos e Cia" className="h-10 w-auto rounded-lg object-contain" />
         </Link>
         <nav className="hidden md:flex items-center gap-8 text-sm">
           <a
@@ -53,7 +50,7 @@ export default function PublicHeader() {
             </Link>
           )}
           <Link
-            to="/agendar"
+            to={user ? "/agendar" : "/login"}
             className="text-sm bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors"
           >
             Agendar agora

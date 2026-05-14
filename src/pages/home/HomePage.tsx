@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 import {
   Calendar,
   Sparkles,
@@ -26,6 +27,10 @@ import PublicFooter from "@/components/common/PublicFooter";
 import { Card } from "@/components/ui/card";
 import { brl } from "@/utils/format";
 import { useDb } from "@/store/mockDb";
+import { useAuth } from "@/store/authStore";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const FEATURES = [
   {
@@ -112,7 +117,7 @@ const PLANS = [
 const TESTIMONIALS = [
   {
     name: "Marina Castro",
-    role: "Studio Belle · SP",
+    role: "Studio Cabelos e Cia · SP",
     text: "Em duas semanas zerei as faltas e organizei a agenda das três profissionais. Parece coisa de outro mundo.",
   },
   {
@@ -151,7 +156,7 @@ const TIMES = [
 const FAQ = [
   {
     q: "Preciso instalar algum aplicativo?",
-    a: "Não. O Belle roda direto no navegador, no computador ou no celular. Suas clientes também agendam pelo navegador, sem baixar nada.",
+    a: "Não. O Cabelos e Cia roda direto no navegador, no computador ou no celular. Suas clientes também agendam pelo navegador, sem baixar nada.",
   },
   {
     q: "Posso cancelar quando quiser?",
@@ -174,11 +179,17 @@ const FAQ = [
 export default function HomePage() {
   const services = useDb((s) => s.services)
     .filter((s) => s.active)
-    .slice(0, 6);
+    .slice(0, 4);
   const allProfessionals = useDb((s) => s.professionals);
-  const professionals = allProfessionals.slice(0, 4);
+  const professionals = allProfessionals;
   const appointments = useDb((s) => s.appointments);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [showAll, setShowAll] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { user, loginByPhone, registerClient } = useAuth();
+  const navigate = useNavigate();
 
   const today = useMemo(() => {
     const d = new Date();
@@ -187,6 +198,16 @@ export default function HomePage() {
 
   const todayDate = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
   const [selectedSlots, setSelectedSlots] = useState<Record<string, string>>({});
+
+  const formatPhone = (v: string) => {
+    const digits = v.replace(/\D/g, "");
+    if (digits.length <= 11) {
+      return digits
+        .replace(/^(\d{2})(\d)/g, "($1) $2")
+        .replace(/(\d)(\d{4})$/, "$1-$2");
+    }
+    return digits.slice(0, 11);
+  };
 
   const availableToday = useMemo(() => {
     return allProfessionals.map((pro) => {
@@ -204,7 +225,7 @@ export default function HomePage() {
         const end = start.add(30, "minute");
         if (start.isBefore(dayjs(), "minute")) return false;
         return !blockedSlots.some((range) => start.isBefore(range.end) && end.isAfter(range.start));
-      }).slice(0, 3);
+      });
 
       return { professional: pro, slots };
     });
@@ -221,7 +242,7 @@ export default function HomePage() {
   }, [availableToday]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#FFF5F7" }}>
       <PublicHeader />
 
       {/* ===== HERO ===== */}
@@ -232,11 +253,12 @@ export default function HomePage() {
           <div className="absolute bottom-0 left-0 size-[400px] rounded-full bg-secondary/60 blur-3xl" />
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 pt-16 pb-20 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-6xl mx-auto px-6 pt-16 pb-20 grid lg:grid-cols-2 gap-12 items-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="lg:sticky lg:top-32"
           >
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border/60 text-xs text-muted-foreground">
               <Sparkles className="size-3.5 text-primary" />
@@ -254,7 +276,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
               <Link
-                to="/agendar"
+                to={user ? "/agendar" : "/login"}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3.5 rounded-xl font-medium transition-all shadow-[0_8px_30px_-12px_rgba(232,180,184,0.6)] hover:shadow-[0_12px_40px_-12px_rgba(232,180,184,0.8)]"
               >
                 Agendar horário <ArrowRight className="size-4" />
@@ -310,7 +332,7 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-3">
-                {availableToday.map((item) => (
+                {availableToday.slice(0, 2).map((item) => (
                   <div
                     key={item.professional.id}
                     className="rounded-2xl border border-border/60 bg-background p-4"
@@ -327,60 +349,249 @@ export default function HomePage() {
                       </span>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2 items-center">
-                      {item.slots.length > 0 ? (
-                        item.slots.map((slot) => {
-                          const selected = selectedSlots[item.professional.id] === slot;
-                          return (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() =>
-                                setSelectedSlots((prev) => ({
-                                  ...prev,
-                                  [item.professional.id]: slot,
-                                }))
-                              }
-                              className={cn(
-                                "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
-                                selected
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-secondary/20 text-muted-foreground hover:bg-secondary/30",
-                              )}
-                            >
-                              {slot}
-                            </button>
-                          );
-                        })
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Sem horários livres hoje</span>
+                      {item.slots.slice(0, 3).map((slot) => {
+                        const selected = selectedSlots[item.professional.id] === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() =>
+                              setSelectedSlots((prev) => ({
+                                ...prev,
+                                [item.professional.id]: slot,
+                              }))
+                            }
+                            className={cn(
+                              "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                              selected
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary/20 text-muted-foreground hover:bg-secondary/30",
+                            )}
+                          >
+                            {slot}
+                          </button>
+                        );
+                      })}
+                      <AnimatePresence>
+                        {showAll &&
+                          item.slots.slice(3).map((slot, sIdx) => {
+                            const selected = selectedSlots[item.professional.id] === slot;
+                            return (
+                              <motion.button
+                                key={slot}
+                                initial={{ opacity: 0, scale: 0.9, y: 5 }}
+                                animate={{ 
+                                  opacity: 1, 
+                                  scale: 1, 
+                                  y: 0,
+                                  transition: {
+                                    delay: sIdx * 0.03,
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15
+                                  }
+                                }}
+                                exit={{ opacity: 0, scale: 0.9, y: 5 }}
+                                type="button"
+                                onClick={() =>
+                                  setSelectedSlots((prev) => ({
+                                    ...prev,
+                                    [item.professional.id]: slot,
+                                  }))
+                                }
+                                className={cn(
+                                  "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                                  selected
+                                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                    : "bg-secondary/20 text-muted-foreground hover:bg-secondary/30",
+                                )}
+                              >
+                                {slot}
+                              </motion.button>
+                            );
+                          })}
+                      </AnimatePresence>
+                      {!showAll && item.slots.length > 3 && (
+                        <span className="text-[10px] text-muted-foreground ml-1">
+                          +{item.slots.length - 3} mais
+                        </span>
                       )}
-                    </div>
-                    <div className="mt-4">
-                      <Link
-                        to="/agendar"
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-                      >
-                        Agendar horário agora
-                        <ArrowRight className="size-4" />
-                      </Link>
                     </div>
                   </div>
                 ))}
+
+                <AnimatePresence>
+                  {showAll &&
+                    availableToday.slice(2).map((item, idx) => (
+                      <motion.div
+                        key={item.professional.id}
+                        initial={{ opacity: 0, y: 20, height: 0 }}
+                        animate={{ 
+                          opacity: 1, 
+                          y: 0, 
+                          height: "auto",
+                          transition: {
+                            height: { duration: 0.4 },
+                            opacity: { duration: 0.3, delay: idx * 0.1 },
+                            y: { type: "spring", stiffness: 100, damping: 15, delay: idx * 0.1 }
+                          }
+                        }}
+                        exit={{ 
+                          opacity: 0, 
+                          y: 10, 
+                          height: 0,
+                          transition: {
+                            height: { duration: 0.3 },
+                            opacity: { duration: 0.2 }
+                          }
+                        }}
+                        className="overflow-hidden"
+                      >
+                        <div className="rounded-2xl border border-border/60 bg-background p-4 mt-3 hover:border-primary/40 transition-colors shadow-sm">
+                          <div className="flex items-center justify-between gap-4">
+                            <div>
+                              <p className="text-sm font-semibold">{item.professional.name}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {item.professional.specialties.slice(0, 2).join(" · ")}
+                              </p>
+                            </div>
+                            <span className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
+                              Hoje
+                            </span>
+                          </div>
+                          <div className="mt-4 flex flex-wrap gap-2 items-center">
+                            {item.slots.map((slot, sIdx) => {
+                              const selected = selectedSlots[item.professional.id] === slot;
+                              return (
+                                <motion.button
+                                  key={slot}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ 
+                                    opacity: 1, 
+                                    scale: 1,
+                                    transition: { delay: (idx * 0.1) + (sIdx * 0.02) }
+                                  }}
+                                  type="button"
+                                  onClick={() =>
+                                    setSelectedSlots((prev) => ({
+                                      ...prev,
+                                      [item.professional.id]: slot,
+                                    }))
+                                  }
+                                  className={cn(
+                                    "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                                    selected
+                                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                                      : "bg-secondary/20 text-muted-foreground hover:bg-secondary/30",
+                                  )}
+                                >
+                                  {slot}
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                </AnimatePresence>
               </div>
 
-              <Link
-                to="/agendar"
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-              >
-                Ver todos os horários <ArrowRight className="size-4" />
-              </Link>
+              {!user ? (
+                <div className="mt-6 pt-6 border-t border-border/40">
+                  <p className="text-xs text-muted-foreground mb-3 text-center uppercase tracking-wider">
+                    Já é cliente? Entre rápido
+                  </p>
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="(11) 99999-9999"
+                      value={phone}
+                      onChange={(e) => setPhone(formatPhone(e.target.value))}
+                      className="rounded-xl h-12 bg-secondary/30 border-border/60"
+                    />
+                    <AnimatePresence>
+                      {isRegistering && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <Input
+                            placeholder="Seu nome completo"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="rounded-xl h-12 bg-secondary/30 border-border/60 mb-3"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <Button
+                      onClick={async () => {
+                        const cleanPhone = phone.replace(/\D/g, "");
+                        if (cleanPhone.length < 10) {
+                          toast.error("Digite um telefone válido");
+                          return;
+                        }
+
+                        if (isRegistering) {
+                          if (name.length < 3) {
+                            toast.error("Digite seu nome completo");
+                            return;
+                          }
+                          try {
+                            await registerClient({ name, phone: cleanPhone });
+                            toast.success(`Bem-vindo, ${name}!`);
+                            navigate({ to: "/agendar" });
+                          } catch (err) {
+                            toast.error("Erro ao cadastrar");
+                          }
+                          return;
+                        }
+
+                        try {
+                          const result = await loginByPhone(cleanPhone);
+                          if (result.isNew) {
+                            setIsRegistering(true);
+                            toast.info("Telefone não encontrado. Digite seu nome para continuar.");
+                          } else {
+                            toast.success(`Bem-vindo de volta, ${result.user?.name}!`);
+                          }
+                        } catch (err) {
+                          toast.error("Erro ao entrar");
+                        }
+                      }}
+                      className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20"
+                    >
+                      {isRegistering ? "Concluir Cadastro" : "Entrar agora"}
+                    </Button>
+                    {isRegistering && (
+                      <button
+                        onClick={() => {
+                          setIsRegistering(false);
+                          setName("");
+                        }}
+                        className="w-full py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  to="/agendar"
+                  className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+                >
+                  Continuar Agendamento <ArrowRight className="size-4" />
+                </Link>
+              )}
             </Card>
           </motion.div>
         </div>
       </section>
 
       {/* ===== TRUST STRIP ===== */}
-      <section className="border-y border-border/60 bg-card/40">
+      <section className="border-y border-border/60 bg-pink-50/30">
         <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             { v: "+1.200", l: "salões ativos" },
@@ -425,7 +636,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== SERVICES SHOWCASE ===== */}
-      <section id="services" className="bg-card/40 border-y border-border/60">
+      <section id="services" className="bg-pink-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div className="max-w-xl">
@@ -518,7 +729,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FEATURES (for salon owners) ===== */}
-      <section id="features" className="bg-card/40 border-y border-border/60">
+      <section id="features" className="bg-pink-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -625,7 +836,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="bg-card/40 border-y border-border/60">
+      <section className="bg-pink-50/30 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -737,7 +948,7 @@ export default function HomePage() {
                     <Instagram className="size-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">@studiobelle</p>
+                    <p className="text-sm font-medium">@cabelosecia</p>
                     <p className="text-xs text-muted-foreground">Inspirações e novidades</p>
                   </div>
                 </div>

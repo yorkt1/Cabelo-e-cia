@@ -22,9 +22,11 @@ export default function MyAppointments() {
   const [phone, setPhone] = useState("");
   const [registerData, setRegisterData] = useState({ name: "", email: "", birthday: "" });
   const [results, setResults] = useState<Appointment[] | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileData, setProfileData] = useState({ name: "", email: "", phone: "", birthday: "" });
 
-  const { appointments, clients, services, professionals } = useDb();
-  const { user, loginByPhone, registerClient, logout, isAuthenticated } = useAuth();
+  const { appointments, clients, services, professionals, updateClient } = useDb();
+  const { user, loginByPhone, registerClient, logout, isAuthenticated, updateUser } = useAuth();
   const isClientAuthenticated = isAuthenticated && user?.role === "client";
 
   useEffect(() => {
@@ -34,8 +36,19 @@ export default function MyAppointments() {
         .sort((a, b) => dayjs(b.start).valueOf() - dayjs(a.start).valueOf());
       setResults(appts);
       setStep("appointments");
+
+      // Set initial profile data
+      const client = clients.find(c => c.id === user.id);
+      if (client) {
+        setProfileData({
+          name: client.name,
+          email: client.email || "",
+          phone: client.phone,
+          birthday: client.birthday || ""
+        });
+      }
     }
-  }, [isClientAuthenticated, user?.id, appointments]);
+  }, [isClientAuthenticated, user?.id, appointments, clients]);
 
   async function handlePhoneSearch() {
     if (!phone) return;
@@ -71,11 +84,22 @@ export default function MyAppointments() {
     toast.success("Conta criada com sucesso!");
   }
 
+  async function handleUpdateProfile() {
+    try {
+      await updateUser(profileData);
+      setIsEditingProfile(false);
+      toast.success("Perfil atualizado com sucesso!");
+    } catch (err) {
+      toast.error("Erro ao atualizar perfil");
+    }
+  }
+
   function handleLogout() {
     logout();
     setStep("phone");
     setPhone("");
     setRegisterData({ name: "", email: "", birthday: "" });
+    setIsEditingProfile(false);
     setResults(null);
   }
 
@@ -87,12 +111,86 @@ export default function MyAppointments() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="font-display text-3xl font-semibold">Meus Agendamentos</h1>
-              <p className="text-muted-foreground mt-1">Olá, {user?.name}</p>
+              <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                Olá, {user?.name} 
+                <button 
+                  onClick={() => setIsEditingProfile(!isEditingProfile)}
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  {isEditingProfile ? "Cancelar edição" : "Editar perfil"}
+                </button>
+              </p>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              Sair
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                Sair
+              </Button>
+            </div>
           </div>
+
+          <AnimatePresence>
+            {isEditingProfile && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mb-8"
+              >
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Editar Perfil</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-name" className="text-xs">Nome completo</Label>
+                        <Input 
+                          id="edit-name"
+                          value={profileData.name}
+                          onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                          className="h-9"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-phone" className="text-xs">Telefone</Label>
+                        <Input 
+                          id="edit-phone"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                          className="h-9"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-email" className="text-xs">Email</Label>
+                        <Input 
+                          id="edit-email"
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                          className="h-9"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="edit-birthday" className="text-xs">Data de nascimento</Label>
+                        <Input 
+                          id="edit-birthday"
+                          type="date"
+                          value={profileData.birthday}
+                          onChange={(e) => setProfileData({...profileData, birthday: e.target.value})}
+                          className="h-9"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <Button size="sm" onClick={handleUpdateProfile}>
+                        Salvar Alterações
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {results && results.length > 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4">

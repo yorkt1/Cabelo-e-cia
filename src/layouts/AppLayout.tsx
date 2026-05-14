@@ -86,7 +86,7 @@ export default function AppLayout() {
           </div>
           {!sidebarCollapsed && (
             <div className="leading-tight">
-              <p className="font-display text-lg font-semibold">Belle</p>
+              <p className="font-display text-lg font-semibold">Cabelos e Cia</p>
               <p className="text-[11px] text-muted-foreground">{currentSalon?.name}</p>
             </div>
           )}
